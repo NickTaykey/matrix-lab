@@ -1,19 +1,51 @@
-import { useCallback, useState } from 'react';
+const Matrix = (props) => {
+  const updateMatrixSize = (e) => {
+    if (e.target.name === 'nCols') {
+      props.dispatchMatrixArray({
+        type: 'UPDATE_MATRIX_SIZE',
+        payload: {
+          id: props.id,
+          newNCols: Number(e.target.value),
+        },
+      });
+    }
+    if (e.target.name === 'nRows') {
+      props.dispatchMatrixArray({
+        type: 'UPDATE_MATRIX_SIZE',
+        payload: {
+          id: props.id,
+          newNRows: Number(e.target.value),
+        },
+      });
+    }
+  };
 
-const Matrix = () => {
-  const [nRows, setNRows] = useState(3);
-  const [nCols, setNCols] = useState(3);
-  const [matrix, setMatrix] = useState(
-    new Array(nRows).fill(new Array(nCols).fill(0))
-  );
-
-  const updateMatrixSize = useCallback((e) => {}, []);
-
-  const updateCellValue = useCallback((e) => {}, []);
+  const updateCellValue = (e) => {
+    let [rowIdx, colIdx] = e.target.getAttribute('id').split('-');
+    rowIdx = Number(rowIdx);
+    colIdx = Number(colIdx);
+    props.dispatchMatrixArray({
+      type: 'UPDATE_MATRIX_VALUE',
+      payload: {
+        id: props.id,
+        newValue: e.target.value,
+        colIdx,
+        rowIdx,
+      },
+    });
+  };
 
   return (
-    <article>
-      <header>
+    <article
+      style={{
+        display: 'inline-flex',
+        flexDirection: 'column',
+        border: '1px solid gray',
+        padding: '16px',
+        border: `5px solid ${props.color}`,
+      }}
+    >
+      <header style={{ display: 'flex', justifyContent: 'center' }}>
         <fieldset>
           <label htmlFor="rows-input">Rows</label>
           <input
@@ -21,7 +53,7 @@ const Matrix = () => {
             name="nRows"
             id="rows-input"
             onChange={updateMatrixSize}
-            value={nRows}
+            value={props.nRows}
             min="2"
             max="10"
           />
@@ -33,7 +65,7 @@ const Matrix = () => {
             name="nCols"
             id="cols-input"
             onChange={updateMatrixSize}
-            value={nCols}
+            value={props.nCols}
             min="2"
             max="10"
           />
@@ -41,7 +73,7 @@ const Matrix = () => {
       </header>
       <table>
         <tbody>
-          {matrix.map((row, rowIdx) => (
+          {props.matrix.map((row, rowIdx) => (
             <tr key={rowIdx}>
               {row.map((cell, cellIdx) => (
                 <td key={`${rowIdx}-${cellIdx}`}>
