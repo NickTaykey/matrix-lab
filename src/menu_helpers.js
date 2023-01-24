@@ -8,17 +8,24 @@ const matrixArrayReducer = (state, action) => {
       return [
         ...state,
         {
+          matrix: new Array(3).fill(new Array(3).fill('')),
           id: crypto.randomUUID(),
+          color: genRandomColor(),
+          selected: false,
           nCols: 3,
           nRows: 3,
-          matrix: new Array(3).fill(new Array(3).fill('')),
-          color: genRandomColor(),
         },
       ];
     }
 
     case 'DELETE_MATRIX': {
       return state.filter((m) => m.id !== action.payload.id);
+    }
+
+    case 'TOGGLE_MATRIX_SELECTION_STATE': {
+      return state.map((m) =>
+        m.id === action.payload.id ? { ...m, selected: !m.selected } : m
+      );
     }
 
     case 'UPDATE_MATRIX_VALUE': {

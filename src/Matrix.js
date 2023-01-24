@@ -40,11 +40,23 @@ const Matrix = (props) => {
       style={{
         display: 'inline-flex',
         flexDirection: 'column',
-        border: '1px solid gray',
-        padding: '16px',
+        padding: '2rem',
+        margin: '2rem',
         border: `5px solid ${props.color}`,
       }}
     >
+      {props.isSelectionModeOn && (
+        <input
+          type="checkbox"
+          checked={props.selected}
+          onChange={() => {
+            props.dispatchMatrixArray({
+              type: 'TOGGLE_MATRIX_SELECTION_STATE',
+              payload: { id: props.id },
+            });
+          }}
+        />
+      )}
       <header style={{ display: 'flex', justifyContent: 'center' }}>
         <fieldset>
           <label htmlFor="rows-input">Rows</label>
