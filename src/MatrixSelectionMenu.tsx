@@ -1,15 +1,20 @@
-const MatrixSelectionMenu = ({ toggleSelectionMode, selectedColorArray }) => (
+interface MatrixSelectionMenuProps {
+  toggleSelectionMode(cb: (v: boolean) => boolean): void;
+  selectedColorArray: string[];
+}
+
+const MatrixSelectionMenu = (props: MatrixSelectionMenuProps) => (
   <>
     <fieldset>
       <input
-        onClick={() => toggleSelectionMode((current) => !current)}
+        onClick={() => props.toggleSelectionMode((current) => !current)}
         id="matrix-seletion-toggler"
         type="checkbox"
       />
       <label htmlFor="matrix-seletion-toggler">Select matrix for product</label>
     </fieldset>
     <section>
-      {selectedColorArray.map((color) => (
+      {props.selectedColorArray.map((color) => (
         <span
           key={color}
           style={{
@@ -25,5 +30,8 @@ const MatrixSelectionMenu = ({ toggleSelectionMode, selectedColorArray }) => (
     </section>
   </>
 );
+
+/*
+ */
 
 export default MatrixSelectionMenu;

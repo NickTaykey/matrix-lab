@@ -1,4 +1,8 @@
-const ErrorAlert = (props) => (
+interface ErrorAlertProps {
+  message: string;
+}
+
+const ErrorAlert = (props: ErrorAlertProps) => (
   <section
     style={{
       color: '#d42a1e',

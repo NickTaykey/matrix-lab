@@ -1,19 +1,23 @@
+import matrixArrayReducer, {
+  MatrixObjectType,
+  MatrixActionTypes,
+  MatrixArray,
+} from './menu_helpers';
+import matrixProduct, { NumberMatrix } from './matrix_helpers';
 import MatrixSelectionMenu from './MatrixSelectionMenu';
-import { matrixProduct } from './matrix_helpers';
-import matrixArrayReducer from './menu_helpers';
 import { useEffect, useReducer, useState } from 'react';
-import Matrix from './Matrix';
 import ErrorAlert from './ErrorAlert';
+import Matrix from './Matrix';
 
 const Menu = () => {
   const [matrixArray, dispatchMatrixArray] = useReducer(matrixArrayReducer, []);
+  const [selectedColorArray, setSelectedColorArray] = useState<string[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSelectionModeOn, toggleSelectionMode] = useState(false);
-  const [selectedColorArray, setSelectedColorArray] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     dispatchMatrixArray({
-      type: 'ADD_MATRIX',
+      type: MatrixActionTypes.ADD_MATRIX,
       payload: {
         matrix: [
           [1, 2],
@@ -22,7 +26,7 @@ const Menu = () => {
       },
     });
     dispatchMatrixArray({
-      type: 'ADD_MATRIX',
+      type: MatrixActionTypes.ADD_MATRIX,
       payload: {
         matrix: [
           [5, 2],
@@ -31,7 +35,7 @@ const Menu = () => {
       },
     });
     dispatchMatrixArray({
-      type: 'ADD_MATRIX',
+      type: MatrixActionTypes.ADD_MATRIX,
       payload: {
         matrix: [
           [9, 10],
@@ -42,31 +46,34 @@ const Menu = () => {
   }, []);
 
   const createMatrix = () => {
-    dispatchMatrixArray({ type: 'ADD_MATRIX' });
+    dispatchMatrixArray({ type: MatrixActionTypes.ADD_MATRIX, payload: {} });
   };
 
   const multiplySelectedMatrix = () => {
     let foundNotValidMatrix = false;
 
     const selected = selectedColorArray
-      .map((c) => matrixArray.find((m) => m.color === c))
+      .map((c) => matrixArray.find((m) => m.color === c)! as MatrixObjectType)
       .map((m, i) => {
-        return m.matrix.map((r) =>
-          r.map((n) => {
+        return m.matrix.map((r) => {
+          return r.map((n) => {
             const t = Number(n);
             if (isNaN(t)) {
               setErrorMessage(`Invalid value ${t} in matrix ${i}`);
               foundNotValidMatrix = true;
             }
             return t;
-          })
-        );
+          });
+        });
       });
 
-    let res = [];
+    let res: MatrixArray = [];
 
     for (let i = 0; i < selected.length - 1 && !foundNotValidMatrix; ++i) {
-      const nextMatrix = res.length === 0 ? selected[i + 1] : res;
+      const nextMatrix = (
+        res.length === 0 ? selected[i + 1] : res
+      ) as NumberMatrix;
+
       if (selected[i][0].length !== nextMatrix.length) {
         setErrorMessage(
           `Error: ${
@@ -77,11 +84,15 @@ const Menu = () => {
         );
         foundNotValidMatrix = true;
       }
+
       res = matrixProduct(selected[i], nextMatrix);
     }
 
     if (!foundNotValidMatrix && res.length) {
-      dispatchMatrixArray({ type: 'ADD_MATRIX', payload: { matrix: res } });
+      dispatchMatrixArray({
+        type: MatrixActionTypes.ADD_MATRIX,
+        payload: { matrix: res },
+      });
     }
   };
 
@@ -109,11 +120,12 @@ const Menu = () => {
       >
         {matrixArray.map((mat) => (
           <Matrix
+            selectedColorArray={selectedColorArray}
             setSelectedColorArray={setSelectedColorArray}
             dispatchMatrixArray={dispatchMatrixArray}
             isSelectionModeOn={isSelectionModeOn}
+            matrix={mat}
             key={mat.id}
-            {...mat}
           />
         ))}
         <button onClick={createMatrix}>New Matrix</button>

@@ -1,4 +1,6 @@
-function matrixProduct(m1, m2) {
+export type NumberMatrix = Array<number[]>;
+
+function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
   let x = m1.length;
   let z = m1[0].length;
   let y = m2[0].length;
@@ -10,12 +12,12 @@ function matrixProduct(m1, m2) {
     );
   }
 
-  let productRow = Array.apply(null, new Array(y)).map(
+  let productRow: Array<number> = Array.apply(null, new Array<number>(y)).map(
     Number.prototype.valueOf,
     0
   );
 
-  let product = new Array(x);
+  let product: NumberMatrix = new Array(x);
 
   for (let p = 0; p < x; p++) {
     product[p] = productRow.slice();
@@ -32,4 +34,4 @@ function matrixProduct(m1, m2) {
   return product;
 }
 
-export { matrixProduct };
+export default matrixProduct;

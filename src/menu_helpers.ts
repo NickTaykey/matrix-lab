@@ -1,14 +1,74 @@
+export type MatrixArray = Array<(number | string)[]>;
+
+export interface MatrixObjectType {
+  matrix: MatrixArray;
+  nCols: number;
+  nRows: number;
+  color: string;
+  id: string;
+}
+
+export enum MatrixActionTypes {
+  ADD_MATRIX,
+  DELETE_MATRIX,
+  UPDATE_MATRIX_SIZE,
+  UPDATE_MATRIX_VALUE,
+}
+
+interface AddMatrixAction {
+  type: MatrixActionTypes.ADD_MATRIX;
+  payload: {
+    matrix?: MatrixArray;
+  };
+}
+
+interface DeleteMatrixAction {
+  type: MatrixActionTypes.DELETE_MATRIX;
+  payload: {
+    id: string;
+  };
+}
+
+interface UpdateMatrixValueAction {
+  type: MatrixActionTypes.UPDATE_MATRIX_VALUE;
+  payload: {
+    id: string;
+    rowIdx: number;
+    colIdx: number;
+    newValue: string;
+  };
+}
+
+interface UpdateMatrixSizeAction {
+  type: MatrixActionTypes.UPDATE_MATRIX_SIZE;
+  payload: {
+    id: string;
+    newNCols?: number;
+    newNRows?: number;
+  };
+}
+
+export type GenericMatrixReducerAction =
+  | AddMatrixAction
+  | DeleteMatrixAction
+  | UpdateMatrixValueAction
+  | UpdateMatrixSizeAction;
+
 const genRandomColor = () => {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 };
 
-const matrixArrayReducer = (state, action) => {
+const matrixArrayReducer = (
+  state: MatrixObjectType[],
+  action: GenericMatrixReducerAction
+) => {
   switch (action.type) {
-    case 'ADD_MATRIX': {
-      let nRows, nCols, matrix;
-      nRows = nCols = matrix = null;
+    case MatrixActionTypes.ADD_MATRIX: {
+      let nRows: number | null = null;
+      let nCols: number | null = null;
+      let matrix: MatrixArray = [];
 
-      if (action.payload) {
+      if (action.payload.matrix) {
         matrix = action.payload.matrix;
         nCols = matrix[0].length;
         nRows = matrix.length;
@@ -22,22 +82,15 @@ const matrixArrayReducer = (state, action) => {
           nRows: nRows ? nRows : 3,
           id: crypto.randomUUID(),
           color: genRandomColor(),
-          // selected: false,
         },
       ];
     }
 
-    case 'DELETE_MATRIX': {
+    case MatrixActionTypes.DELETE_MATRIX: {
       return state.filter((m) => m.id !== action.payload.id);
     }
 
-    /* case 'TOGGLE_MATRIX_SELECTION_STATE': {
-      return state.map((m) =>
-        m.id === action.payload.id ? { ...m, selected: !m.selected } : m
-      );
-    } */
-
-    case 'UPDATE_MATRIX_VALUE': {
+    case MatrixActionTypes.UPDATE_MATRIX_VALUE: {
       const { id, rowIdx, colIdx, newValue } = action.payload;
       return state.map((m) => {
         return m.id === id
@@ -58,7 +111,7 @@ const matrixArrayReducer = (state, action) => {
       });
     }
 
-    case 'UPDATE_MATRIX_SIZE': {
+    case MatrixActionTypes.UPDATE_MATRIX_SIZE: {
       const { newNCols, newNRows, id } = action.payload;
 
       if (!newNCols && !newNRows) return state;
@@ -96,9 +149,7 @@ const matrixArrayReducer = (state, action) => {
     }
 
     default:
-      throw new Error(
-        `Unknown type '${action.type}' for matrixArrayReducer actions`
-      );
+      throw new Error('Unknown type for matrixArrayReducer');
   }
 };
 

@@ -1,34 +1,50 @@
-const Matrix = (props) => {
-  const updateMatrixSize = (e) => {
-    if (e.target.name === 'nCols') {
+import {
+  GenericMatrixReducerAction,
+  MatrixActionTypes,
+  MatrixObjectType,
+} from './menu_helpers';
+import React from 'react';
+
+interface MatrixProps {
+  dispatchMatrixArray(action: GenericMatrixReducerAction): void;
+  setSelectedColorArray(cb: (colors: string[]) => string[]): void;
+  selectedColorArray: string[];
+  isSelectionModeOn: boolean;
+  matrix: MatrixObjectType;
+}
+
+const Matrix = (props: MatrixProps) => {
+  const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
+    if (e.currentTarget.name === 'nCols') {
       props.dispatchMatrixArray({
-        type: 'UPDATE_MATRIX_SIZE',
+        type: MatrixActionTypes.UPDATE_MATRIX_SIZE,
         payload: {
-          id: props.id,
-          newNCols: Number(e.target.value),
+          id: props.matrix.id,
+          newNCols: Number(e.currentTarget.value),
         },
       });
     }
-    if (e.target.name === 'nRows') {
+    if (e.currentTarget.name === 'nRows') {
       props.dispatchMatrixArray({
-        type: 'UPDATE_MATRIX_SIZE',
+        type: MatrixActionTypes.UPDATE_MATRIX_SIZE,
         payload: {
-          id: props.id,
-          newNRows: Number(e.target.value),
+          id: props.matrix.id,
+          newNRows: Number(e.currentTarget.value),
         },
       });
     }
   };
 
-  const updateCellValue = (e) => {
-    let [rowIdx, colIdx] = e.target.getAttribute('id').split('-');
-    rowIdx = Number(rowIdx);
-    colIdx = Number(colIdx);
+  const updateCellValue = (e: React.FormEvent<HTMLInputElement>) => {
+    let [rowIdx, colIdx] = e.currentTarget
+      .getAttribute('id')!
+      .split('-')
+      .map((v) => Number(v));
     props.dispatchMatrixArray({
-      type: 'UPDATE_MATRIX_VALUE',
+      type: MatrixActionTypes.UPDATE_MATRIX_VALUE,
       payload: {
-        id: props.id,
-        newValue: e.target.value,
+        id: props.matrix.id,
+        newValue: e.currentTarget.value,
         colIdx,
         rowIdx,
       },
@@ -42,23 +58,19 @@ const Matrix = (props) => {
         flexDirection: 'column',
         padding: '2rem',
         margin: '0 2rem 2rem 2rem',
-        border: `5px solid ${props.color}`,
+        border: `5px solid ${props.matrix.color}`,
       }}
     >
       {props.isSelectionModeOn && (
         <input
           type="checkbox"
-          checked={props.selected}
+          checked={props.selectedColorArray.includes(props.matrix.color)}
           onChange={() => {
-            /* props.dispatchMatrixArray({
-              type: 'TOGGLE_MATRIX_SELECTION_STATE',
-              payload: { id: props.id },
-            }); */
             props.setSelectedColorArray((arr) => {
-              if (arr.includes(props.color)) {
-                return arr.filter((c) => c !== props.color);
+              if (arr.includes(props.matrix.color)) {
+                return arr.filter((c) => c !== props.matrix.color);
               }
-              return [...arr, props.color];
+              return [...arr, props.matrix.color];
             });
           }}
         />
@@ -71,7 +83,7 @@ const Matrix = (props) => {
             name="nRows"
             id="rows-input"
             onChange={updateMatrixSize}
-            value={props.nRows}
+            value={props.matrix.nRows}
             min="2"
             max="10"
           />
@@ -83,15 +95,16 @@ const Matrix = (props) => {
             name="nCols"
             id="cols-input"
             onChange={updateMatrixSize}
-            value={props.nCols}
+            value={props.matrix.nCols}
             min="2"
             max="10"
           />
         </fieldset>
+        <button>Show Product Steps</button>
       </header>
       <table>
         <tbody>
-          {props.matrix.map((row, rowIdx) => (
+          {props.matrix.matrix.map((row, rowIdx) => (
             <tr key={rowIdx}>
               {row.map((cell, cellIdx) => (
                 <td key={`${rowIdx}-${cellIdx}`}>
