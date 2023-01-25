@@ -64,9 +64,9 @@ const matrixArrayReducer = (
 ) => {
   switch (action.type) {
     case MatrixActionTypes.ADD_MATRIX: {
+      let matrix: MatrixArray | null = null;
       let nRows: number | null = null;
       let nCols: number | null = null;
-      let matrix: MatrixArray = [];
 
       if (action.payload.matrix) {
         matrix = action.payload.matrix;

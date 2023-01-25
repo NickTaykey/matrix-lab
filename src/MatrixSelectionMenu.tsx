@@ -31,7 +31,4 @@ const MatrixSelectionMenu = (props: MatrixSelectionMenuProps) => (
   </>
 );
 
-/*
- */
-
 export default MatrixSelectionMenu;
