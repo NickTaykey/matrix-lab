@@ -41,7 +41,7 @@ const Matrix = (props) => {
         display: 'inline-flex',
         flexDirection: 'column',
         padding: '2rem',
-        margin: '2rem',
+        margin: '0 2rem 2rem 2rem',
         border: `5px solid ${props.color}`,
       }}
     >
@@ -50,9 +50,15 @@ const Matrix = (props) => {
           type="checkbox"
           checked={props.selected}
           onChange={() => {
-            props.dispatchMatrixArray({
+            /* props.dispatchMatrixArray({
               type: 'TOGGLE_MATRIX_SELECTION_STATE',
               payload: { id: props.id },
+            }); */
+            props.setSelectedColorArray((arr) => {
+              if (arr.includes(props.color)) {
+                return arr.filter((c) => c !== props.color);
+              }
+              return [...arr, props.color];
             });
           }}
         />

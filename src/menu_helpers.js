@@ -5,15 +5,24 @@ const genRandomColor = () => {
 const matrixArrayReducer = (state, action) => {
   switch (action.type) {
     case 'ADD_MATRIX': {
+      let nRows, nCols, matrix;
+      nRows = nCols = matrix = null;
+
+      if (action.payload) {
+        matrix = action.payload.matrix;
+        nCols = matrix[0].length;
+        nRows = matrix.length;
+      }
+
       return [
         ...state,
         {
-          matrix: new Array(3).fill(new Array(3).fill('')),
+          matrix: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
+          nCols: nCols ? nCols : 3,
+          nRows: nRows ? nRows : 3,
           id: crypto.randomUUID(),
           color: genRandomColor(),
-          selected: false,
-          nCols: 3,
-          nRows: 3,
+          // selected: false,
         },
       ];
     }
@@ -22,11 +31,11 @@ const matrixArrayReducer = (state, action) => {
       return state.filter((m) => m.id !== action.payload.id);
     }
 
-    case 'TOGGLE_MATRIX_SELECTION_STATE': {
+    /* case 'TOGGLE_MATRIX_SELECTION_STATE': {
       return state.map((m) =>
         m.id === action.payload.id ? { ...m, selected: !m.selected } : m
       );
-    }
+    } */
 
     case 'UPDATE_MATRIX_VALUE': {
       const { id, rowIdx, colIdx, newValue } = action.payload;

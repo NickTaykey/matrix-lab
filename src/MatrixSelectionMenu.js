@@ -1,5 +1,5 @@
-const MatrixSelectionMenu = ({ toggleSelectionMode, matrixArray }) => (
-  <header>
+const MatrixSelectionMenu = ({ toggleSelectionMode, selectedColorArray }) => (
+  <>
     <fieldset>
       <input
         onClick={() => toggleSelectionMode((current) => !current)}
@@ -9,24 +9,21 @@ const MatrixSelectionMenu = ({ toggleSelectionMode, matrixArray }) => (
       <label htmlFor="matrix-seletion-toggler">Select matrix for product</label>
     </fieldset>
     <section>
-      {matrixArray
-        .filter((m) => m.selected)
-        .map((m) => (
-          <span
-            key={m.color}
-            style={{
-              backgroundColor: m.color,
-              display: 'inline-block',
-              borderRadius: '100%',
-              width: '25px',
-              height: '25px',
-              marginRight: '5px',
-            }}
-          ></span>
-        ))}
+      {selectedColorArray.map((color) => (
+        <span
+          key={color}
+          style={{
+            backgroundColor: color,
+            display: 'inline-block',
+            borderRadius: '100%',
+            width: '25px',
+            height: '25px',
+            marginRight: '5px',
+          }}
+        />
+      ))}
     </section>
-    <button>Multiply!</button>
-  </header>
+  </>
 );
 
 export default MatrixSelectionMenu;
