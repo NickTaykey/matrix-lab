@@ -1,25 +1,10 @@
-import GeneralContext from './store/GeneralContext';
-import { useEffect, useContext } from 'react';
+import GeneralContext from '../store/GeneralContext';
 import MenuHeader from './MenuHeader';
+import { useContext } from 'react';
 import Matrix from './Matrix';
 
 const Menu = () => {
   const generalContext = useContext(GeneralContext);
-
-  useEffect(() => {
-    generalContext.createMatrix([
-      [1, 2],
-      [3, 4],
-    ]);
-    generalContext.createMatrix([
-      [5, 2],
-      [3, 7],
-    ]);
-    generalContext.createMatrix([
-      [9, 10],
-      [3, 11],
-    ]);
-  }, []);
 
   const createMatrix = () => {
     generalContext.createMatrix();

@@ -1,10 +1,12 @@
-import { useReducer, useState } from 'react';
-import MatrixContext, {
+import {
   GenericMatrixReducerAction,
   MatrixActionTypes,
   MatrixObject,
+  MatrixTypes,
   MatrixArray,
-} from './GeneralContext';
+} from './matrix_reducer_types';
+import { useEffect, useReducer, useState } from 'react';
+import MatrixContext from './GeneralContext';
 
 const genRandomColor = () => {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
@@ -32,6 +34,7 @@ const MatrixContextProvider: React.FC<{
         return [
           ...state,
           {
+            type: action.payload.type ? action.payload.type : MatrixTypes.INPUT,
             matrix: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
             nCols: nCols ? nCols : 3,
             nRows: nRows ? nRows : 3,
@@ -113,6 +116,36 @@ const MatrixContextProvider: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSelectionModeOn, toggleSelectionMode] = useState(false);
 
+  useEffect(() => {
+    dispatchMatrices({
+      type: MatrixActionTypes.ADD_MATRIX,
+      payload: {
+        matrix: [
+          [1, 2],
+          [3, 4],
+        ],
+      },
+    });
+    dispatchMatrices({
+      type: MatrixActionTypes.ADD_MATRIX,
+      payload: {
+        matrix: [
+          [5, 2],
+          [3, 7],
+        ],
+      },
+    });
+    dispatchMatrices({
+      type: MatrixActionTypes.ADD_MATRIX,
+      payload: {
+        matrix: [
+          [9, 10],
+          [3, 11],
+        ],
+      },
+    });
+  }, []);
+
   return (
     <MatrixContext.Provider
       value={{
@@ -123,10 +156,10 @@ const MatrixContextProvider: React.FC<{
         selectedColorsArray,
         setSelectedColorsArray,
         matrices,
-        createMatrix(matrix) {
+        createMatrix(matrix, type) {
           dispatchMatrices({
             type: MatrixActionTypes.ADD_MATRIX,
-            payload: matrix ? { matrix } : {},
+            payload: matrix ? { matrix, type } : {},
           });
         },
         deleteMatrix(matrixId) {

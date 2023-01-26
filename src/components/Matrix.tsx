@@ -1,4 +1,4 @@
-import { MatrixObject } from '../store/matrix_reducer_types';
+import { MatrixObject, MatrixTypes } from '../store/matrix_reducer_types';
 import { useState, useEffect, useContext } from 'react';
 import GeneralContext from '../store/GeneralContext';
 import ReactModal from 'react-modal';
@@ -96,9 +96,11 @@ const Matrix = (props: MatrixProps) => {
               max="10"
             />
           </fieldset>
-          <button onClick={() => setIsModalOpen((v) => !v)}>
-            Show Product Steps
-          </button>
+          {props.matrix.type === MatrixTypes.PRODUCT && (
+            <button onClick={() => setIsModalOpen((v) => !v)}>
+              Show Product Steps
+            </button>
+          )}
         </header>
         <table>
           <tbody>

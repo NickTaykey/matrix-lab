@@ -1,6 +1,12 @@
 export type MatrixArray = Array<(number | string)[]>;
 
+export enum MatrixTypes {
+  INPUT,
+  PRODUCT,
+}
+
 export interface MatrixObject {
+  type: MatrixTypes;
   matrix: MatrixArray;
   nCols: number;
   nRows: number;
@@ -19,6 +25,7 @@ interface AddMatrixAction {
   type: MatrixActionTypes.ADD_MATRIX;
   payload: {
     matrix?: MatrixArray;
+    type?: MatrixTypes;
   };
 }
 
@@ -43,8 +50,8 @@ interface UpdateMatrixSizeAction {
   type: MatrixActionTypes.UPDATE_MATRIX_SIZE;
   payload: {
     id: string;
-    newNCols?: number;
-    newNRows?: number;
+    newNCols: number | null;
+    newNRows: number | null;
   };
 }
 

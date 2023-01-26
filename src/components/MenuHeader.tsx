@@ -1,8 +1,8 @@
-import matrixProduct, { NumberMatrix } from './helpers/matrix_calc_helpers';
+import matrixProduct, { NumberMatrix } from '../helpers/matrix_calc_helpers';
+import { MatrixObject, MatrixTypes } from '../store/matrix_reducer_types';
 import MatrixSelectionMenu from './MatrixSelectionMenu';
-import GeneralContext from './store/GeneralContext';
-import { MatrixObject } from './matrix_reducer_types';
-import ErrorAlert from './components/ErrorAlert';
+import GeneralContext from '../store/GeneralContext';
+import ErrorAlert from '../components/ErrorAlert';
 import { useContext } from 'react';
 
 const MenuHeader = () => {
@@ -54,7 +54,7 @@ const MenuHeader = () => {
     }
 
     if (!foundNotValidMatrix && res.length) {
-      generalContext.createMatrix(res);
+      generalContext.createMatrix(res, MatrixTypes.PRODUCT);
     }
   };
 
