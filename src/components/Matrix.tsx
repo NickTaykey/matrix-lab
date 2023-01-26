@@ -1,43 +1,24 @@
-import {
-  GenericMatrixReducerAction,
-  MatrixActionTypes,
-  MatrixObjectType,
-} from './menu_helpers';
-import React from 'react';
+import { MatrixObject } from '../store/matrix_reducer_types';
+import { useState, useEffect, useContext } from 'react';
+import GeneralContext from '../store/GeneralContext';
 import ReactModal from 'react-modal';
-import { useState } from 'react';
-import { useEffect } from 'react';
+import React from 'react';
 
 interface MatrixProps {
-  dispatchMatrixArray(action: GenericMatrixReducerAction): void;
-  setSelectedColorArray(cb: (colors: string[]) => string[]): void;
-  selectedColorArray: string[];
-  isSelectionModeOn: boolean;
-  matrix: MatrixObjectType;
+  matrix: MatrixObject;
 }
 
 const Matrix = (props: MatrixProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const generalContext = useContext(GeneralContext);
 
   const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
-    if (e.currentTarget.name === 'nCols') {
-      props.dispatchMatrixArray({
-        type: MatrixActionTypes.UPDATE_MATRIX_SIZE,
-        payload: {
-          id: props.matrix.id,
-          newNCols: Number(e.currentTarget.value),
-        },
-      });
-    }
-    if (e.currentTarget.name === 'nRows') {
-      props.dispatchMatrixArray({
-        type: MatrixActionTypes.UPDATE_MATRIX_SIZE,
-        payload: {
-          id: props.matrix.id,
-          newNRows: Number(e.currentTarget.value),
-        },
-      });
-    }
+    generalContext.updateMatrixSize(props.matrix.id, {
+      newNRows:
+        e.currentTarget.name === 'nRows' ? Number(e.currentTarget.value) : null,
+      newNCols:
+        e.currentTarget.name === 'nCols' ? Number(e.currentTarget.value) : null,
+    });
   };
 
   const updateCellValue = (e: React.FormEvent<HTMLInputElement>) => {
@@ -45,15 +26,12 @@ const Matrix = (props: MatrixProps) => {
       .getAttribute('id')!
       .split('-')
       .map((v) => Number(v));
-    props.dispatchMatrixArray({
-      type: MatrixActionTypes.UPDATE_MATRIX_VALUE,
-      payload: {
-        id: props.matrix.id,
-        newValue: e.currentTarget.value,
-        colIdx,
-        rowIdx,
-      },
-    });
+    generalContext.updateMatrixValue(
+      props.matrix.id,
+      rowIdx,
+      colIdx,
+      e.currentTarget.value
+    );
   };
 
   useEffect(() => {
@@ -77,12 +55,14 @@ const Matrix = (props: MatrixProps) => {
           border: `5px solid ${props.matrix.color}`,
         }}
       >
-        {props.isSelectionModeOn && (
+        {generalContext.isSelectionModeOn && (
           <input
             type="checkbox"
-            checked={props.selectedColorArray.includes(props.matrix.color)}
+            checked={generalContext.selectedColorsArray.includes(
+              props.matrix.color
+            )}
             onChange={() => {
-              props.setSelectedColorArray((arr) => {
+              generalContext.setSelectedColorsArray((arr) => {
                 if (arr.includes(props.matrix.color)) {
                   return arr.filter((c) => c !== props.matrix.color);
                 }
