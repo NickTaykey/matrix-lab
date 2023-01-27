@@ -1,5 +1,9 @@
 import matrixProduct, { NumberMatrix } from '../helpers/matrix_calc_helpers';
-import { MatrixObject, MatrixTypes } from '../store/matrix_reducer_types';
+import {
+  MatrixArray,
+  MatrixObject,
+  MatrixProductSteps,
+} from '../store/matrix_reducer_types';
 import MatrixSelectionMenu from './MatrixSelectionMenu';
 import GeneralContext from '../store/GeneralContext';
 import ErrorAlert from '../components/ErrorAlert';
@@ -11,35 +15,38 @@ const MenuHeader = () => {
   const multiplySelectedMatrix = () => {
     let foundNotValidMatrix = false;
 
-    const selected = generalContext.selectedColorsArray
-      .map((c) => {
-        return generalContext.matrices.find(
-          (m) => m.color === c
-        )! as MatrixObject;
-      })
-      .map((m, i) => {
-        return m.matrix.map((r) => {
-          return r.map((n) => {
-            const t = Number(n);
-            if (isNaN(t)) {
-              generalContext.setErrorMessage(
-                `Invalid value ${t} in matrix ${i}`
-              );
-              foundNotValidMatrix = true;
-            }
-            return t;
-          });
+    const selectedMatricesObj = generalContext.selectedColorsArray.map((c) => {
+      return generalContext.matrices.find(
+        (m) => m.color === c
+      )! as MatrixObject;
+    });
+
+    const selectedMatrices = selectedMatricesObj.map((m, i) => {
+      return m.matrix.map((r) => {
+        return r.map((n) => {
+          const t = Number(n);
+          if (isNaN(t)) {
+            generalContext.setErrorMessage(`Invalid value ${t} in matrix ${i}`);
+            foundNotValidMatrix = true;
+          }
+          return t;
         });
       });
+    });
 
-    let res: NumberMatrix = [];
+    let resultMat: NumberMatrix = [];
+    const productSteps: MatrixProductSteps = [];
 
-    for (let i = 0; i < selected.length - 1 && !foundNotValidMatrix; ++i) {
+    for (
+      let i = 0;
+      i < selectedMatrices.length - 1 && !foundNotValidMatrix;
+      ++i
+    ) {
       const nextMatrix = (
-        res.length === 0 ? selected[i + 1] : res
+        resultMat.length === 0 ? selectedMatrices[i + 1] : resultMat
       ) as NumberMatrix;
 
-      if (selected[i][0].length !== nextMatrix.length) {
+      if (selectedMatrices[i][0].length !== nextMatrix.length) {
         generalContext.setErrorMessage(
           `Error: ${
             i === 0
@@ -50,11 +57,25 @@ const MenuHeader = () => {
         foundNotValidMatrix = true;
       }
 
-      res = matrixProduct(selected[i], nextMatrix);
+      const result = matrixProduct(selectedMatrices[i], nextMatrix);
+
+      productSteps.push(
+        i > 0
+          ? {
+              steps: [resultMat, selectedMatrices[i + 1], result.productMat],
+              decomposedResult: result.productString,
+            }
+          : {
+              steps: [selectedMatrices[i], nextMatrix, result.productMat],
+              decomposedResult: result.productString,
+            }
+      );
+
+      resultMat = result.productMat;
     }
 
-    if (!foundNotValidMatrix && res.length) {
-      generalContext.createMatrix(res, MatrixTypes.PRODUCT);
+    if (!foundNotValidMatrix && resultMat.length) {
+      generalContext.createMatrix(resultMat, productSteps);
     }
   };
 

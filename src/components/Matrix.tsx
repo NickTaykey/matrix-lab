@@ -1,11 +1,16 @@
-import { MatrixObject, MatrixTypes } from '../store/matrix_reducer_types';
+import {
+  MatrixObject,
+  MatrixProductObject,
+  MatrixTypes,
+} from '../store/matrix_reducer_types';
 import { useState, useEffect, useContext } from 'react';
 import GeneralContext from '../store/GeneralContext';
 import ReactModal from 'react-modal';
 import React from 'react';
+import ProductModal from './ProductModal';
 
 interface MatrixProps {
-  matrix: MatrixObject;
+  matrix: MatrixObject | MatrixProductObject;
 }
 
 const Matrix = (props: MatrixProps) => {
@@ -43,8 +48,14 @@ const Matrix = (props: MatrixProps) => {
       <ReactModal
         isOpen={isModalOpen}
         contentLabel="Matrix product explanation modal"
+        style={{
+          content: { width: '100vw', height: '100vh', top: '0', left: '0' },
+        }}
       >
-        <button onClick={() => setIsModalOpen((v) => !v)}>Close</button>
+        <ProductModal
+          closeModal={() => setIsModalOpen(false)}
+          matrix={props.matrix as MatrixProductObject}
+        />
       </ReactModal>
       <article
         style={{

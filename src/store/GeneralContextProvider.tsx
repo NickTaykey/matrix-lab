@@ -1,5 +1,6 @@
 import {
   GenericMatrixReducerAction,
+  MatrixProductObject,
   MatrixActionTypes,
   MatrixObject,
   MatrixTypes,
@@ -8,7 +9,7 @@ import {
 import { useEffect, useReducer, useState } from 'react';
 import MatrixContext from './GeneralContext';
 
-const genRandomColor = () => {
+export const genRandomColor = () => {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 };
 
@@ -16,7 +17,7 @@ const MatrixContextProvider: React.FC<{
   children: React.ReactNode[] | React.ReactNode;
 }> = (props) => {
   const matrixArrayReducer = (
-    state: MatrixObject[],
+    state: (MatrixObject | MatrixProductObject)[],
     action: GenericMatrixReducerAction
   ) => {
     switch (action.type) {
@@ -31,16 +32,25 @@ const MatrixContextProvider: React.FC<{
           nRows = matrix.length;
         }
 
+        let matrixObj = {
+          type: action.payload.matrixProductSteps
+            ? MatrixTypes.PRODUCT
+            : MatrixTypes.INPUT,
+          matrix: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
+          nCols: nCols ? nCols : 3,
+          nRows: nRows ? nRows : 3,
+          id: crypto.randomUUID(),
+          color: genRandomColor(),
+        } as MatrixObject;
+
         return [
           ...state,
-          {
-            type: action.payload.type ? action.payload.type : MatrixTypes.INPUT,
-            matrix: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
-            nCols: nCols ? nCols : 3,
-            nRows: nRows ? nRows : 3,
-            id: crypto.randomUUID(),
-            color: genRandomColor(),
-          },
+          action.payload.matrixProductSteps
+            ? {
+                ...matrixObj,
+                matrixProductSteps: action.payload.matrixProductSteps,
+              }
+            : matrixObj,
         ];
       }
 
@@ -156,10 +166,10 @@ const MatrixContextProvider: React.FC<{
         selectedColorsArray,
         setSelectedColorsArray,
         matrices,
-        createMatrix(matrix, type) {
+        createMatrix(matrix, matrixProductSteps) {
           dispatchMatrices({
             type: MatrixActionTypes.ADD_MATRIX,
-            payload: matrix ? { matrix, type } : {},
+            payload: { matrix, matrixProductSteps },
           });
         },
         deleteMatrix(matrixId) {

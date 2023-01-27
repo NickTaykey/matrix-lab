@@ -1,3 +1,5 @@
+import { MatrixArray } from '../store/matrix_reducer_types';
+
 export type NumberMatrix = Array<number[]>;
 
 function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
@@ -17,21 +19,26 @@ function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
     0
   );
 
-  let product: NumberMatrix = new Array(x);
+  let productMat: NumberMatrix = new Array(x);
+  let productString: Array<string[]> = [];
 
   for (let p = 0; p < x; p++) {
-    product[p] = productRow.slice();
+    productMat[p] = productRow.slice();
+    productString[p] = new Array(productRow.slice().length).fill('');
   }
 
   for (let i = 0; i < x; i++) {
     for (let j = 0; j < y; j++) {
       for (let k = 0; k < z; k++) {
-        product[i][j] += m1[i][k] * m2[k][j];
+        productMat[i][j] += m1[i][k] * m2[k][j];
+        productString[i][j] = productString[i][j].concat(
+          m1[i][k] + ' * ' + m2[k][j] + (k !== z - 1 ? ' + ' : '')
+        );
       }
     }
   }
 
-  return product;
+  return { productMat, productString };
 }
 
 export default matrixProduct;
