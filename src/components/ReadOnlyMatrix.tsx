@@ -5,14 +5,14 @@ export type GroupColorState = {
   color: string;
 }[];
 
+export type CellCoords = [number, number];
+
 interface ReadOnlyMatrixProps {
   matrix: MatrixArray;
-  onColClick?: (e: React.MouseEvent<HTMLTableCellElement>) => void;
-  colsColorState?: GroupColorState;
-  onRowClick?: (e: React.MouseEvent<HTMLTableRowElement>) => void;
-  rowsColorState?: GroupColorState;
-  onCellClick?: (e: React.MouseEvent<HTMLTableCellElement>) => void;
+  rowColors?: Array<string[]>;
+  colColors?: Array<string[]>;
   cellsColorState?: GroupColorState[];
+  onCellClick?: (coords: CellCoords) => void;
 }
 
 const ReadOnlyMatrix = (props: ReadOnlyMatrixProps) => (
@@ -23,13 +23,11 @@ const ReadOnlyMatrix = (props: ReadOnlyMatrixProps) => (
       {props.matrix.map((row, rowIdx) => (
         <tr
           key={rowIdx}
-          onClick={props.onRowClick ? props.onRowClick : undefined}
           id={rowIdx.toString()}
           style={{
-            backgroundColor:
-              props.rowsColorState && props.rowsColorState[rowIdx].hightlighted
-                ? props.rowsColorState[rowIdx].color
-                : 'transparent',
+            backgroundColor: props.rowColors
+              ? props.rowColors[rowIdx].join(' ')
+              : 'transparent',
           }}
         >
           {row.map((cell, colIdx) => (
@@ -39,19 +37,16 @@ const ReadOnlyMatrix = (props: ReadOnlyMatrixProps) => (
               style={{
                 padding: '1rem',
                 backgroundColor:
-                  props.colsColorState &&
-                  props.colsColorState[colIdx].hightlighted
-                    ? props.colsColorState[colIdx].color
-                    : props.cellsColorState &&
-                      props.cellsColorState[rowIdx][colIdx].hightlighted
+                  props.cellsColorState &&
+                  props.cellsColorState[rowIdx][colIdx].hightlighted
                     ? props.cellsColorState[rowIdx][colIdx].color
+                    : props.colColors
+                    ? props.colColors[colIdx].join(' ')
                     : 'transparent',
               }}
               onClick={
-                props.onColClick
-                  ? props.onColClick
-                  : props.onCellClick
-                  ? props.onCellClick
+                props.onCellClick
+                  ? () => props.onCellClick!([rowIdx, colIdx])
                   : undefined
               }
             >
