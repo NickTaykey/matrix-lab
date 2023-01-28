@@ -1,20 +1,16 @@
 import ReadOnlyMatrix, { GroupColorState, CellCoords } from './ReadOnlyMatrix';
 import type { ProductStep } from '../store/matrix_reducer_types';
+import { genRandomColor } from '../store/GeneralContextProvider';
 import * as fa from 'react-icons/fa';
 import { useState } from 'react';
-
-function selectColor(n: number) {
-  const hue = n * 137.508;
-  return `hsl(${hue},50%,75%)`;
-}
 
 const ProductStepView = (props: ProductStep) => {
   const [cellColors, setCellColors] = useState<GroupColorState[]>(
     new Array(props.steps[2].length)
       .fill(new Array(props.steps[2][0].length).fill(null))
-      .map((r) => {
-        return r.map(() => ({
-          color: selectColor(Math.random()),
+      .map((row: Array<null>, rowIdx) => {
+        return row.map((_, colIdx) => ({
+          color: genRandomColor(),
           hightlighted: false,
         }));
       })

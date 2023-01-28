@@ -15,44 +15,72 @@ interface ReadOnlyMatrixProps {
   onCellClick?: (coords: CellCoords) => void;
 }
 
-const ReadOnlyMatrix = (props: ReadOnlyMatrixProps) => (
+const isColorDark = (color: string) => {
+  const [r, g, b] = color
+    .substring(color.indexOf('(') + 1, color.length - 1)
+    .split(', ')
+    .map((n) => Number(n));
+  const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  if (luma < 140) return true;
+  return false;
+};
+
+const ReadOnlyMatrix = ({
+  matrix,
+  rowColors,
+  colColors,
+  cellsColorState,
+  onCellClick,
+}: ReadOnlyMatrixProps) => (
   <table
     style={{ borderLeft: '1px solid gray', borderRight: '1px solid gray' }}
   >
     <tbody>
-      {props.matrix.map((row, rowIdx) => (
+      {matrix.map((row, rowIdx) => (
         <tr
           key={rowIdx}
           id={rowIdx.toString()}
           style={{
-            backgroundColor: props.rowColors
-              ? props.rowColors[rowIdx].join(' ')
+            backgroundColor: rowColors
+              ? rowColors[rowIdx].at(-1)
               : 'transparent',
           }}
         >
-          {row.map((cell, colIdx) => (
-            <td
-              key={`${rowIdx}-${colIdx}`}
-              id={`${rowIdx}-${colIdx}`}
-              style={{
-                padding: '1rem',
-                backgroundColor:
-                  props.cellsColorState &&
-                  props.cellsColorState[rowIdx][colIdx].hightlighted
-                    ? props.cellsColorState[rowIdx][colIdx].color
-                    : props.colColors
-                    ? props.colColors[colIdx].join(' ')
-                    : 'transparent',
-              }}
-              onClick={
-                props.onCellClick
-                  ? () => props.onCellClick!([rowIdx, colIdx])
-                  : undefined
-              }
-            >
-              {cell}
-            </td>
-          ))}
+          {row.map((cell, colIdx) => {
+            const bgColor =
+              cellsColorState && cellsColorState[rowIdx][colIdx].hightlighted
+                ? cellsColorState[rowIdx][colIdx].color
+                : colColors && colColors.length
+                ? colColors[colIdx].at(-1)!
+                : 'transparent';
+
+            let textColor = 'black';
+
+            if (bgColor?.length && bgColor !== 'transparent') {
+              textColor = isColorDark(bgColor) ? 'white' : 'black';
+            } else if (rowColors && rowColors[rowIdx].length) {
+              textColor = isColorDark(rowColors[rowIdx].at(-1)!)
+                ? 'white'
+                : 'black';
+            }
+
+            return (
+              <td
+                key={`${rowIdx}-${colIdx}`}
+                id={`${rowIdx}-${colIdx}`}
+                style={{
+                  padding: '1rem',
+                  backgroundColor: bgColor,
+                  color: textColor,
+                }}
+                onClick={
+                  onCellClick ? () => onCellClick!([rowIdx, colIdx]) : undefined
+                }
+              >
+                {cell}
+              </td>
+            );
+          })}
         </tr>
       ))}
     </tbody>

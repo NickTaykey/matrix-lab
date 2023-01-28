@@ -10,7 +10,10 @@ import { useEffect, useReducer, useState } from 'react';
 import MatrixContext from './GeneralContext';
 
 export const genRandomColor = () => {
-  return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
+  const r = Math.round(Math.random() * 255);
+  const g = Math.round(Math.random() * 255);
+  const b = Math.round(Math.random() * 255);
+  return `rgb(${r}, ${g}, ${b})`;
 };
 
 const MatrixContextProvider: React.FC<{
