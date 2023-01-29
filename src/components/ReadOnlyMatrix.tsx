@@ -1,7 +1,7 @@
 import { MatrixArray } from '../store/matrix_reducer_types';
 
 export type GroupColorState = {
-  hightlighted: boolean;
+  clickTimeStamp: number;
   color: string;
 }[];
 
@@ -9,8 +9,8 @@ export type CellCoords = [number, number];
 
 interface ReadOnlyMatrixProps {
   matrix: MatrixArray;
-  rowColors?: Array<string[]>;
-  colColors?: Array<string[]>;
+  rowColors?: string[];
+  colColors?: string[];
   cellsColorState?: GroupColorState[];
   onCellClick?: (coords: CellCoords) => void;
 }
@@ -41,17 +41,15 @@ const ReadOnlyMatrix = ({
           key={rowIdx}
           id={rowIdx.toString()}
           style={{
-            backgroundColor: rowColors
-              ? rowColors[rowIdx].at(-1)
-              : 'transparent',
+            backgroundColor: rowColors ? rowColors[rowIdx] : 'transparent',
           }}
         >
           {row.map((cell, colIdx) => {
             const bgColor =
-              cellsColorState && cellsColorState[rowIdx][colIdx].hightlighted
+              cellsColorState && cellsColorState[rowIdx][colIdx].clickTimeStamp
                 ? cellsColorState[rowIdx][colIdx].color
                 : colColors && colColors.length
-                ? colColors[colIdx].at(-1)!
+                ? colColors[colIdx]
                 : 'transparent';
 
             let textColor = 'black';
@@ -59,9 +57,7 @@ const ReadOnlyMatrix = ({
             if (bgColor?.length && bgColor !== 'transparent') {
               textColor = isColorDark(bgColor) ? 'white' : 'black';
             } else if (rowColors && rowColors[rowIdx].length) {
-              textColor = isColorDark(rowColors[rowIdx].at(-1)!)
-                ? 'white'
-                : 'black';
+              textColor = isColorDark(rowColors[rowIdx]) ? 'white' : 'black';
             }
 
             return (

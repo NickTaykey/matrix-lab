@@ -8,38 +8,60 @@ const ProductStepView = (props: ProductStep) => {
   const [cellColors, setCellColors] = useState<GroupColorState[]>(
     new Array(props.steps[2].length)
       .fill(new Array(props.steps[2][0].length).fill(null))
-      .map((row: Array<null>, rowIdx) => {
-        return row.map((_, colIdx) => ({
+      .map((row: Array<null>) => {
+        return row.map(() => ({
           color: genRandomColor(),
-          hightlighted: false,
+          clickTimeStamp: 0,
         }));
       })
   );
 
   const computeRowColors = () => {
-    return cellColors.reduce((acm, row) => {
+    const rowColors = cellColors.reduce((acm, row) => {
       acm.push(
         row.reduce((acm, cell) => {
-          if (cell.hightlighted) acm.push(cell.color);
+          if (cell.clickTimeStamp) acm.push(cell);
           return acm;
-        }, [] as string[])
+        }, [] as GroupColorState)
       );
       return acm;
-    }, [] as Array<string[]>);
+    }, [] as GroupColorState[]);
+
+    const clickedRowsColors = rowColors.map((row) => {
+      if (row.length === 0) return 'transparent';
+      const maxTimeStamp = Math.max(...row.map((c) => c.clickTimeStamp));
+      return row.find((c) => {
+        return c.clickTimeStamp === maxTimeStamp;
+      })!.color;
+    });
+
+    return clickedRowsColors;
   };
 
   const computeColColors = () => {
-    let colColors: Array<string[]> = [];
+    let colColors: GroupColorState[] = [];
+
     for (let i = 0; i < cellColors[0].length; ++i) {
       colColors[i] = [];
       for (let j = 0; j < cellColors.length; ++j) {
-        colColors[i][j] = cellColors[j][i].hightlighted
-          ? cellColors[j][i].color
-          : 'transparent';
+        if (
+          cellColors[j][i].clickTimeStamp &&
+          cellColors[j][i].color !== 'transparent'
+        ) {
+          colColors[i].push(cellColors[j][i]);
+        }
       }
     }
-    colColors = colColors.map((col) => col.filter((c) => c !== 'transparent'));
-    return colColors;
+
+    const clickedColsColors = colColors.map((col) => {
+      if (col.length === 0) return 'transparent';
+      const maxTimeStamp = Math.max(...col.map((c) => c.clickTimeStamp));
+      return col.find((c) => {
+        return c.clickTimeStamp === maxTimeStamp;
+      })!.color;
+    });
+
+    return clickedColsColors;
   };
 
   const cellClickHandler = (coords: CellCoords) => {
@@ -49,7 +71,7 @@ const ProductStepView = (props: ProductStep) => {
         return r.map((c, i) => {
           if (i !== coords[1]) return c;
           const t = Object.assign({}, c);
-          t.hightlighted = !c.hightlighted;
+          t.clickTimeStamp = !c.clickTimeStamp ? Date.now() : 0;
           return t;
         });
       });
