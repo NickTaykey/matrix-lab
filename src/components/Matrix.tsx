@@ -5,9 +5,9 @@ import {
 } from '../store/matrix_reducer_types';
 import { useState, useEffect, useContext } from 'react';
 import GeneralContext from '../store/GeneralContext';
+import ProductModal from './ProductModal';
 import ReactModal from 'react-modal';
 import React from 'react';
-import ProductModal from './ProductModal';
 
 interface MatrixProps {
   matrix: MatrixObject | MatrixProductObject;
@@ -58,6 +58,7 @@ const Matrix = (props: MatrixProps) => {
         />
       </ReactModal>
       <article
+        className="matrix"
         style={{
           display: 'inline-flex',
           flexDirection: 'column',
@@ -84,11 +85,11 @@ const Matrix = (props: MatrixProps) => {
         )}
         <header style={{ display: 'flex', justifyContent: 'center' }}>
           <fieldset>
-            <label htmlFor="rows-input">Rows</label>
+            <label htmlFor={`matrix-${props.matrix.id}-rows-input`}>Rows</label>
             <input
               type="number"
-              name="nRows"
-              id="rows-input"
+              name={`matrix-${props.matrix.id}-rows-input`}
+              id={`matrix-${props.matrix.id}-rows-input`}
               onChange={updateMatrixSize}
               value={props.matrix.nRows}
               min="2"
@@ -99,8 +100,8 @@ const Matrix = (props: MatrixProps) => {
             <label htmlFor="cols-input">Columns</label>
             <input
               type="number"
-              name="nCols"
-              id="cols-input"
+              name={`matrix-${props.matrix.id}-cols-input`}
+              id={`matrix-${props.matrix.id}-cols-input`}
               onChange={updateMatrixSize}
               value={props.matrix.nCols}
               min="2"

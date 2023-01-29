@@ -33,6 +33,7 @@ const ReadOnlyMatrix = ({
   onCellClick,
 }: ReadOnlyMatrixProps) => (
   <table
+    className="matrix"
     style={{ borderLeft: '1px solid gray', borderRight: '1px solid gray' }}
   >
     <tbody>
