@@ -7,9 +7,21 @@ export enum MatrixTypes {
   PRODUCT,
 }
 
+export type DeterminantStep = {
+  currentCell: number;
+  submatrix: NumberTable | null;
+  submatrixDeterminantSteps: DeterminantStep[] | null;
+  coords: [number, number];
+};
+
+export type Determinant = {
+  result: number;
+  steps: DeterminantStep[] | null;
+};
+
 export interface MatrixObject {
   type: MatrixTypes;
-  determinant: number | null;
+  determinant: Determinant | null;
   table: Table;
   nCols: number;
   nRows: number;

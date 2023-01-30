@@ -1,3 +1,5 @@
+import { Determinant, DeterminantStep } from '../store/matrix_reducer_types';
+
 export type NumberTable = Array<number[]>;
 
 function matrixProduct(m1: NumberTable, m2: NumberTable) {
@@ -39,36 +41,47 @@ function matrixProduct(m1: NumberTable, m2: NumberTable) {
   return { productMat, productString };
 }
 
-function getMatrixMinor(m: NumberTable, i: number, j: number) {
-  let _pj_a = [];
-  let _pj_b = [...m.slice(0, i), ...m.slice(i + 1)];
+function getMatrixDeterminant(matrix: number[][]): Determinant {
+  const steps: DeterminantStep[] = [];
+  const n = matrix.length;
 
-  for (let _pj_c = 0, _pj_d = _pj_b.length; _pj_c < _pj_d; _pj_c += 1) {
-    let row = _pj_b[_pj_c];
-
-    _pj_a.push([...row.slice(0, j), ...row.slice(j + 1)]);
+  if (n === 1) {
+    console.log({
+      result: matrix[0][0],
+      steps: null,
+    });
+    return {
+      result: matrix[0][0],
+      steps: null,
+    };
   }
 
-  return _pj_a;
+  let result = 0;
+  for (let i = 0; i < n; i++) {
+    const submatrix: NumberTable = [];
+
+    for (let j = 1; j < n; j++) {
+      const row = [];
+      for (let k = 0; k < n; k++) {
+        if (k === i) continue;
+        row.push(matrix[j][k]);
+      }
+      submatrix.push(row);
+    }
+
+    const subdet = getMatrixDeterminant(submatrix);
+
+    steps.push({
+      submatrixDeterminantSteps: subdet.steps,
+      currentCell: matrix[0][i],
+      coords: [1, i + 1],
+      submatrix,
+    });
+
+    result += matrix[0][i] * subdet.result * (i % 2 === 0 ? 1 : -1);
+  }
+  console.log({ result, steps });
+  return { result, steps };
 }
 
-function getMatrixDeternminant(m: NumberTable) {
-  let determinant;
-
-  if (m.length === 2) {
-    return m[0][0] * m[1][1] - m[0][1] * m[1][0];
-  }
-
-  determinant = 0;
-
-  for (let c = 0, _pj_a = m.length; c < _pj_a; c += 1) {
-    determinant +=
-      Math.pow(-1, c) *
-      m[0][c] *
-      getMatrixDeternminant(getMatrixMinor(m, 0, c));
-  }
-
-  return determinant;
-}
-
-export { matrixProduct, getMatrixDeternminant };
+export { matrixProduct, getMatrixDeterminant };

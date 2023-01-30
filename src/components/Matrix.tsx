@@ -1,11 +1,11 @@
 import {
-  Table,
   MatrixObject,
   MatrixProductObject,
   MatrixTypes,
 } from '../store/matrix_reducer_types';
 import { useState, useEffect, useContext } from 'react';
 import GeneralContext from '../store/GeneralContext';
+import DeterminantModal from './DeterminantModal';
 import ProductModal from './ProductModal';
 import ReactModal from 'react-modal';
 import React from 'react';
@@ -14,8 +14,16 @@ interface MatrixProps {
   matrix: MatrixObject | MatrixProductObject;
 }
 
+enum ModalNames {
+  PRODUCT_STEPS_MODAL,
+  DETERMINANT_STEPS_MODAL,
+}
+
 const Matrix = (props: MatrixProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalState, setModalState] = useState<{
+    modalName: ModalNames | null;
+    isOpen: boolean;
+  }>({ modalName: null, isOpen: false });
   const generalContext = useContext(GeneralContext);
 
   const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
@@ -47,17 +55,38 @@ const Matrix = (props: MatrixProps) => {
   return (
     <>
       <ReactModal
-        isOpen={isModalOpen}
+        isOpen={modalState.isOpen}
         contentLabel="Matrix product explanation modal"
         style={{
           content: { width: '100vw', height: '100vh', top: '0', left: '0' },
         }}
       >
-        <ProductModal
-          closeModal={() => setIsModalOpen(false)}
-          matrix={props.matrix as MatrixProductObject}
-        />
+        {modalState.modalName === ModalNames.PRODUCT_STEPS_MODAL && (
+          <ProductModal
+            closeModal={() =>
+              setModalState((c) => ({
+                modalName: c.modalName ? null : ModalNames.PRODUCT_STEPS_MODAL,
+                isOpen: !c.isOpen,
+              }))
+            }
+            matrix={props.matrix as MatrixProductObject}
+          />
+        )}
+        {modalState.modalName === ModalNames.DETERMINANT_STEPS_MODAL && (
+          <DeterminantModal
+            closeModal={() =>
+              setModalState((c) => ({
+                modalName: c.modalName
+                  ? null
+                  : ModalNames.DETERMINANT_STEPS_MODAL,
+                isOpen: !c.isOpen,
+              }))
+            }
+            matrix={props.matrix as MatrixProductObject}
+          />
+        )}
       </ReactModal>
+
       <article
         className="matrix"
         style={{
@@ -91,7 +120,7 @@ const Matrix = (props: MatrixProps) => {
             <label htmlFor={`matrix-${props.matrix.id}-rows-input`}>Rows</label>
             <input
               type="number"
-              name={`matrix-${props.matrix.id}-rows-input`}
+              name="nRows"
               id={`matrix-${props.matrix.id}-rows-input`}
               onChange={updateMatrixSize}
               value={props.matrix.nRows}
@@ -103,7 +132,7 @@ const Matrix = (props: MatrixProps) => {
             <label htmlFor="cols-input">Columns</label>
             <input
               type="number"
-              name={`matrix-${props.matrix.id}-cols-input`}
+              name="nCols"
               id={`matrix-${props.matrix.id}-cols-input`}
               onChange={updateMatrixSize}
               value={props.matrix.nCols}
@@ -112,7 +141,14 @@ const Matrix = (props: MatrixProps) => {
             />
           </fieldset>
           {props.matrix.type === MatrixTypes.PRODUCT && (
-            <button onClick={() => setIsModalOpen((v) => !v)}>
+            <button
+              onClick={() => {
+                setModalState({
+                  isOpen: true,
+                  modalName: ModalNames.PRODUCT_STEPS_MODAL,
+                });
+              }}
+            >
               Show Product Steps
             </button>
           )}
@@ -134,12 +170,21 @@ const Matrix = (props: MatrixProps) => {
             ))}
           </tbody>
         </table>
-        {}
-        <footer>
-          {props.matrix.determinant && (
-            <span>Determinant: {props.matrix.determinant}</span>
-          )}
-        </footer>
+        {props.matrix.determinant && (
+          <footer>
+            <div>Determinant: {props.matrix.determinant.result}</div>
+            <button
+              onClick={() => {
+                setModalState({
+                  isOpen: true,
+                  modalName: ModalNames.DETERMINANT_STEPS_MODAL,
+                });
+              }}
+            >
+              Determinant Step by Step
+            </button>
+          </footer>
+        )}
       </article>
     </>
   );

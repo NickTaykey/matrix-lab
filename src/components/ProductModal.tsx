@@ -1,5 +1,5 @@
 import { MatrixProductObject } from '../store/matrix_reducer_types';
-import ProductStep from './ProductStep';
+import ProductStep from './ProductStepView';
 
 interface ProductModalProps {
   closeModal(): void;
@@ -21,7 +21,7 @@ const ProductModal = (props: ProductModalProps) => {
         }}
       >
         {props.matrix.matrixProductSteps.map((step, stepIdx) => (
-          <ProductStep key={`step-${stepIdx}`} {...step} />
+          <ProductStep key={`product-step-${stepIdx}`} {...step} />
         ))}
       </main>
     </>

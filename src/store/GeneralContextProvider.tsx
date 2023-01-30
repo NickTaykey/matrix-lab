@@ -6,9 +6,9 @@ import {
   MatrixTypes,
   Table,
 } from './matrix_reducer_types';
-import { useEffect, useReducer, useState } from 'react';
+import { getMatrixDeterminant } from '../helpers/matrix_calc_helpers';
 import MatrixContext, { NumberTable } from './GeneralContext';
-import { getMatrixDeternminant } from '../helpers/matrix_calc_helpers';
+import { useEffect, useReducer, useState } from 'react';
 
 export const genRandomColor = () => {
   const r = Math.round(Math.random() * 255);
@@ -51,7 +51,7 @@ const GeneralContextProvider: React.FC<{
           nRows: nRows ? nRows : 3,
           determinant:
             matrix && isNumberTable(matrix)
-              ? getMatrixDeternminant(matrix as NumberTable)
+              ? getMatrixDeterminant(matrix as NumberTable)
               : null,
           id: crypto.randomUUID(),
           color: genRandomColor(),
@@ -95,7 +95,7 @@ const GeneralContextProvider: React.FC<{
               ...m,
               table: updatedTable,
               determinant: calculateDeterminant
-                ? getMatrixDeternminant(updatedTable as NumberTable)
+                ? getMatrixDeterminant(updatedTable as NumberTable)
                 : null,
             };
           }
@@ -138,6 +138,7 @@ const GeneralContextProvider: React.FC<{
               newMatrix.nRows = newNRows;
             }
           }
+
           return newMatrix;
         });
       }
