@@ -1,4 +1,5 @@
 import {
+  Table,
   MatrixObject,
   MatrixProductObject,
   MatrixTypes,
@@ -67,23 +68,25 @@ const Matrix = (props: MatrixProps) => {
           border: `5px solid ${props.matrix.color}`,
         }}
       >
-        {generalContext.isSelectionModeOn && (
-          <input
-            type="checkbox"
-            checked={generalContext.selectedColorsArray.includes(
-              props.matrix.color
-            )}
-            onChange={() => {
-              generalContext.setSelectedColorsArray((arr) => {
-                if (arr.includes(props.matrix.color)) {
-                  return arr.filter((c) => c !== props.matrix.color);
-                }
-                return [...arr, props.matrix.color];
-              });
-            }}
-          />
-        )}
         <header style={{ display: 'flex', justifyContent: 'center' }}>
+          {generalContext.isSelectionModeOn && (
+            <fieldset>
+              <input
+                type="checkbox"
+                checked={generalContext.selectedColorsArray.includes(
+                  props.matrix.color
+                )}
+                onChange={() => {
+                  generalContext.setSelectedColorsArray((arr) => {
+                    if (arr.includes(props.matrix.color)) {
+                      return arr.filter((c) => c !== props.matrix.color);
+                    }
+                    return [...arr, props.matrix.color];
+                  });
+                }}
+              />
+            </fieldset>
+          )}
           <fieldset>
             <label htmlFor={`matrix-${props.matrix.id}-rows-input`}>Rows</label>
             <input
@@ -116,7 +119,7 @@ const Matrix = (props: MatrixProps) => {
         </header>
         <table>
           <tbody>
-            {props.matrix.matrix.map((row, rowIdx) => (
+            {props.matrix.table.map((row, rowIdx) => (
               <tr key={rowIdx}>
                 {row.map((cell, cellIdx) => (
                   <td key={`${rowIdx}-${cellIdx}`}>
@@ -131,6 +134,12 @@ const Matrix = (props: MatrixProps) => {
             ))}
           </tbody>
         </table>
+        {}
+        <footer>
+          {props.matrix.determinant && (
+            <span>Determinant: {props.matrix.determinant}</span>
+          )}
+        </footer>
       </article>
     </>
   );

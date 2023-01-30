@@ -1,6 +1,6 @@
-import { NumberMatrix } from '../helpers/matrix_calc_helpers';
+import { NumberTable } from '../helpers/matrix_calc_helpers';
 
-export type MatrixArray = Array<(number | string)[]>;
+export type Table = Array<(number | string)[]>;
 
 export enum MatrixTypes {
   INPUT,
@@ -9,7 +9,8 @@ export enum MatrixTypes {
 
 export interface MatrixObject {
   type: MatrixTypes;
-  matrix: MatrixArray;
+  determinant: number | null;
+  table: Table;
   nCols: number;
   nRows: number;
   color: string;
@@ -17,8 +18,8 @@ export interface MatrixObject {
 }
 
 export type ProductStep = {
-  decomposedResult: MatrixArray;
-  steps: NumberMatrix[];
+  decomposedResult: Table;
+  steps: NumberTable[];
 };
 
 export type MatrixProductSteps = Array<ProductStep>;
@@ -39,7 +40,7 @@ interface AddMatrixAction {
   type: MatrixActionTypes.ADD_MATRIX;
   payload: {
     matrixProductSteps?: MatrixProductSteps;
-    matrix?: NumberMatrix;
+    matrix?: NumberTable;
   };
 }
 

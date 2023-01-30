@@ -4,10 +4,11 @@ import {
   MatrixActionTypes,
   MatrixObject,
   MatrixTypes,
-  MatrixArray,
+  Table,
 } from './matrix_reducer_types';
 import { useEffect, useReducer, useState } from 'react';
-import MatrixContext from './GeneralContext';
+import MatrixContext, { NumberTable } from './GeneralContext';
+import { getMatrixDeternminant } from '../helpers/matrix_calc_helpers';
 
 export const genRandomColor = () => {
   const r = Math.round(Math.random() * 255);
@@ -16,16 +17,22 @@ export const genRandomColor = () => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-const MatrixContextProvider: React.FC<{
+const isNumberTable = (table: Table) => {
+  return table.every((row) => {
+    return row.every((c) => typeof c === 'number');
+  });
+};
+
+const GeneralContextProvider: React.FC<{
   children: React.ReactNode[] | React.ReactNode;
 }> = (props) => {
-  const matrixArrayReducer = (
+  const TableReducer = (
     state: (MatrixObject | MatrixProductObject)[],
     action: GenericMatrixReducerAction
   ) => {
     switch (action.type) {
       case MatrixActionTypes.ADD_MATRIX: {
-        let matrix: MatrixArray | null = null;
+        let matrix: Table | null = null;
         let nRows: number | null = null;
         let nCols: number | null = null;
 
@@ -39,9 +46,13 @@ const MatrixContextProvider: React.FC<{
           type: action.payload.matrixProductSteps
             ? MatrixTypes.PRODUCT
             : MatrixTypes.INPUT,
-          matrix: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
+          table: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
           nCols: nCols ? nCols : 3,
           nRows: nRows ? nRows : 3,
+          determinant:
+            matrix && isNumberTable(matrix)
+              ? getMatrixDeternminant(matrix as NumberTable)
+              : null,
           id: crypto.randomUUID(),
           color: genRandomColor(),
         } as MatrixObject;
@@ -63,23 +74,35 @@ const MatrixContextProvider: React.FC<{
 
       case MatrixActionTypes.UPDATE_MATRIX_VALUE: {
         const { id, rowIdx, colIdx, newValue } = action.payload;
-        return state.map((m) => {
-          return m.id === id
-            ? {
-                ...m,
-                matrix: m.matrix.map((r, i) => {
-                  if (i === rowIdx) {
-                    return [
-                      ...r.slice(0, colIdx),
-                      newValue,
-                      ...r.slice(colIdx + 1, r.length),
-                    ];
-                  }
-                  return r;
-                }),
+        const updatedMatrices = state.map((m) => {
+          if (m.id === id) {
+            const updatedTable = m.table.map((r, i) => {
+              if (i === rowIdx) {
+                return [
+                  ...r.slice(0, colIdx),
+                  !newValue.length || isNaN(Number(newValue))
+                    ? newValue
+                    : Number(newValue),
+                  ...r.slice(colIdx + 1, r.length),
+                ];
               }
-            : m;
+              return r;
+            });
+
+            const calculateDeterminant = isNumberTable(updatedTable);
+
+            return {
+              ...m,
+              table: updatedTable,
+              determinant: calculateDeterminant
+                ? getMatrixDeternminant(updatedTable as NumberTable)
+                : null,
+            };
+          }
+          return m;
         });
+
+        return updatedMatrices;
       }
 
       case MatrixActionTypes.UPDATE_MATRIX_SIZE: {
@@ -92,9 +115,9 @@ const MatrixContextProvider: React.FC<{
           if (m.id === id) {
             if (newNCols) {
               if (newNCols - m.nCols > 0) {
-                newMatrix.matrix = newMatrix.matrix.map((r) => [...r, '']);
+                newMatrix.table = newMatrix.table.map((r) => [...r, '']);
               } else {
-                newMatrix.matrix = newMatrix.matrix.map((r) => {
+                newMatrix.table = newMatrix.table.map((r) => {
                   return r.slice(0, r.length - 1);
                 });
               }
@@ -102,14 +125,14 @@ const MatrixContextProvider: React.FC<{
             }
             if (newNRows) {
               if (newNRows - m.nRows > 0) {
-                newMatrix.matrix = [
-                  ...newMatrix.matrix,
+                newMatrix.table = [
+                  ...newMatrix.table,
                   new Array(newMatrix.nCols).fill(''),
                 ];
               } else {
-                newMatrix.matrix = newMatrix.matrix.slice(
+                newMatrix.table = newMatrix.table.slice(
                   0,
-                  newMatrix.matrix.length - 1
+                  newMatrix.table.length - 1
                 );
               }
               newMatrix.nRows = newNRows;
@@ -120,12 +143,12 @@ const MatrixContextProvider: React.FC<{
       }
 
       default:
-        throw new Error('Unknown type for matrixArrayReducer');
+        throw new Error('Unknown type for TableReducer');
     }
   };
 
   const [selectedColorsArray, setSelectedColorsArray] = useState<string[]>([]);
-  const [matrices, dispatchMatrices] = useReducer(matrixArrayReducer, []);
+  const [matrices, dispatchMatrices] = useReducer(TableReducer, []);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSelectionModeOn, toggleSelectionMode] = useState(false);
 
@@ -205,4 +228,4 @@ const MatrixContextProvider: React.FC<{
   );
 };
 
-export default MatrixContextProvider;
+export default GeneralContextProvider;

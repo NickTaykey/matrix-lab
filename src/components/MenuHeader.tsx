@@ -1,11 +1,10 @@
-import matrixProduct, { NumberMatrix } from '../helpers/matrix_calc_helpers';
 import {
-  MatrixArray,
   MatrixObject,
   MatrixProductSteps,
 } from '../store/matrix_reducer_types';
+import GeneralContext, { NumberTable } from '../store/GeneralContext';
+import { matrixProduct } from '../helpers/matrix_calc_helpers';
 import MatrixSelectionMenu from './MatrixSelectionMenu';
-import GeneralContext from '../store/GeneralContext';
 import ErrorAlert from '../components/ErrorAlert';
 import { useContext } from 'react';
 
@@ -22,7 +21,7 @@ const MenuHeader = () => {
     });
 
     const selectedMatrices = selectedMatricesObj.map((m, i) => {
-      return m.matrix.map((r) => {
+      return m.table.map((r) => {
         return r.map((n) => {
           const t = Number(n);
           if (isNaN(t)) {
@@ -34,7 +33,7 @@ const MenuHeader = () => {
       });
     });
 
-    let resultMat: NumberMatrix = [];
+    let resultMat: NumberTable = [];
     const productSteps: MatrixProductSteps = [];
 
     for (
@@ -44,7 +43,7 @@ const MenuHeader = () => {
     ) {
       const nextMatrix = (
         resultMat.length === 0 ? selectedMatrices[i + 1] : resultMat
-      ) as NumberMatrix;
+      ) as NumberTable;
 
       if (selectedMatrices[i][0].length !== nextMatrix.length) {
         generalContext.setErrorMessage(

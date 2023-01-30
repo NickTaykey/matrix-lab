@@ -1,6 +1,7 @@
 import type { MatrixObject, MatrixProductSteps } from './matrix_reducer_types';
-import type { NumberMatrix } from '../helpers/matrix_calc_helpers';
 import React from 'react';
+
+export type NumberTable = Array<number[]>;
 
 interface MatrixContextObject {
   errorMessage: string | null;
@@ -11,7 +12,7 @@ interface MatrixContextObject {
   toggleSelectionMode(cb: (currentState: boolean) => boolean): void;
   matrices: MatrixObject[];
   createMatrix(
-    matrix?: NumberMatrix,
+    matrix?: NumberTable,
     matrixProductSteps?: MatrixProductSteps
   ): void;
   updateMatrixValue(
@@ -38,7 +39,7 @@ const MatrixContext = React.createContext<MatrixContextObject>({
   toggleSelectionMode(cb: (currentState: boolean) => boolean) {},
   matrices: [],
   createMatrix(
-    matrix?: NumberMatrix,
+    matrix?: NumberTable,
     matrixProductSteps?: MatrixProductSteps
   ) {},
   updateMatrixSize(

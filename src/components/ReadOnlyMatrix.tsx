@@ -1,4 +1,4 @@
-import { MatrixArray } from '../store/matrix_reducer_types';
+import { Table } from '../store/matrix_reducer_types';
 
 export type GroupColorState = {
   clickTimeStamp: number;
@@ -8,7 +8,7 @@ export type GroupColorState = {
 export type CellCoords = [number, number];
 
 interface ReadOnlyMatrixProps {
-  matrix: MatrixArray;
+  matrix: Table;
   rowColors?: string[];
   colColors?: string[];
   cellsColorState?: GroupColorState[];

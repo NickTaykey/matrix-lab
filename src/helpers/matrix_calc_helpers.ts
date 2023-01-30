@@ -1,8 +1,6 @@
-import { MatrixArray } from '../store/matrix_reducer_types';
+export type NumberTable = Array<number[]>;
 
-export type NumberMatrix = Array<number[]>;
-
-function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
+function matrixProduct(m1: NumberTable, m2: NumberTable) {
   let x = m1.length;
   let z = m1[0].length;
   let y = m2[0].length;
@@ -19,7 +17,7 @@ function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
     0
   );
 
-  let productMat: NumberMatrix = new Array(x);
+  let productMat: NumberTable = new Array(x);
   let productString: Array<string[]> = [];
 
   for (let p = 0; p < x; p++) {
@@ -41,4 +39,36 @@ function matrixProduct(m1: NumberMatrix, m2: NumberMatrix) {
   return { productMat, productString };
 }
 
-export default matrixProduct;
+function getMatrixMinor(m: NumberTable, i: number, j: number) {
+  let _pj_a = [];
+  let _pj_b = [...m.slice(0, i), ...m.slice(i + 1)];
+
+  for (let _pj_c = 0, _pj_d = _pj_b.length; _pj_c < _pj_d; _pj_c += 1) {
+    let row = _pj_b[_pj_c];
+
+    _pj_a.push([...row.slice(0, j), ...row.slice(j + 1)]);
+  }
+
+  return _pj_a;
+}
+
+function getMatrixDeternminant(m: NumberTable) {
+  let determinant;
+
+  if (m.length === 2) {
+    return m[0][0] * m[1][1] - m[0][1] * m[1][0];
+  }
+
+  determinant = 0;
+
+  for (let c = 0, _pj_a = m.length; c < _pj_a; c += 1) {
+    determinant +=
+      Math.pow(-1, c) *
+      m[0][c] *
+      getMatrixDeternminant(getMatrixMinor(m, 0, c));
+  }
+
+  return determinant;
+}
+
+export { matrixProduct, getMatrixDeternminant };
