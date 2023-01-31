@@ -1,6 +1,7 @@
 import {
   GenericMatrixReducerAction,
   MatrixProductObject,
+  StoredMatrixObject,
   MatrixActionTypes,
   MatrixObject,
   MatrixTypes,
@@ -9,6 +10,22 @@ import {
 import { getMatrixDeterminant } from '../helpers/matrix_calc_helpers';
 import MatrixContext, { NumberTable } from './GeneralContext';
 import { useEffect, useReducer, useState } from 'react';
+
+const updateLocalStorage = (
+  matrices: (MatrixObject | MatrixProductObject)[]
+) => {
+  localStorage.setItem(
+    'recent-matrices',
+    JSON.stringify(
+      matrices.map((m) => ({
+        id: m.id,
+        productSteps: (m as MatrixProductObject).productSteps,
+        table: m.table,
+        color: m.color,
+      }))
+    )
+  );
+};
 
 export const genRandomColor = () => {
   const r = Math.round(Math.random() * 255);
@@ -32,49 +49,65 @@ const GeneralContextProvider: React.FC<{
   ) => {
     switch (action.type) {
       case MatrixActionTypes.ADD_MATRIX: {
-        let matrix: Table | null = null;
+        let table: Table | null = null;
         let nRows: number | null = null;
         let nCols: number | null = null;
 
-        if (action.payload.matrix) {
-          matrix = action.payload.matrix;
-          nCols = matrix[0].length;
-          nRows = matrix.length;
+        const id = action.payload.id ? action.payload.id : crypto.randomUUID();
+
+        if (state.findIndex((m) => m.id === id) >= 0) return state;
+
+        const color = action.payload.color
+          ? action.payload.color
+          : genRandomColor();
+
+        if (action.payload.table) {
+          table = action.payload.table;
+          nCols = table[0].length;
+          nRows = table.length;
         }
 
+        const determinant =
+          table && isNumberTable(table)
+            ? getMatrixDeterminant(table as NumberTable)
+            : null;
+
         let matrixObj = {
-          type: action.payload.matrixProductSteps
+          type: action.payload.productSteps
             ? MatrixTypes.PRODUCT
             : MatrixTypes.INPUT,
-          table: matrix ? matrix : new Array(3).fill(new Array(3).fill('')),
+          table: table ? table : new Array(3).fill(new Array(3).fill('')),
           nCols: nCols ? nCols : 3,
           nRows: nRows ? nRows : 3,
-          determinant:
-            matrix && isNumberTable(matrix)
-              ? getMatrixDeterminant(matrix as NumberTable)
-              : null,
-          id: crypto.randomUUID(),
-          color: genRandomColor(),
+          determinant,
+          color,
+          id,
         } as MatrixObject;
 
-        return [
+        const newState = [
           ...state,
-          action.payload.matrixProductSteps
-            ? {
+          action.payload.productSteps
+            ? ({
                 ...matrixObj,
-                matrixProductSteps: action.payload.matrixProductSteps,
-              }
+                productSteps: action.payload.productSteps,
+              } as MatrixProductObject)
             : matrixObj,
         ];
+
+        if (action.payload.saveOnLocalStorage) updateLocalStorage(newState);
+
+        return newState;
       }
 
       case MatrixActionTypes.DELETE_MATRIX: {
-        return state.filter((m) => m.id !== action.payload.id);
+        const newState = state.filter((m) => m.id !== action.payload.id);
+        updateLocalStorage(newState);
+        return newState;
       }
 
       case MatrixActionTypes.UPDATE_MATRIX_VALUE: {
         const { id, rowIdx, colIdx, newValue } = action.payload;
-        const updatedMatrices = state.map((m) => {
+        const newState = state.map((m) => {
           if (m.id === id) {
             const updatedTable = m.table.map((r, i) => {
               if (i === rowIdx) {
@@ -102,7 +135,9 @@ const GeneralContextProvider: React.FC<{
           return m;
         });
 
-        return updatedMatrices;
+        updateLocalStorage(newState);
+
+        return newState;
       }
 
       case MatrixActionTypes.UPDATE_MATRIX_SIZE: {
@@ -110,7 +145,7 @@ const GeneralContextProvider: React.FC<{
 
         if (!newNCols && !newNRows) return state;
 
-        return state.map((m) => {
+        const newState = state.map((m) => {
           let newMatrix = { ...m };
           if (m.id === id) {
             if (newNCols) {
@@ -141,6 +176,10 @@ const GeneralContextProvider: React.FC<{
 
           return newMatrix;
         });
+
+        updateLocalStorage(newState);
+
+        return newState;
       }
 
       default:
@@ -149,38 +188,55 @@ const GeneralContextProvider: React.FC<{
   };
 
   const [selectedColorsArray, setSelectedColorsArray] = useState<string[]>([]);
-  const [matrices, dispatchMatrices] = useReducer(TableReducer, []);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [matrices, dispatchMatrices] = useReducer(TableReducer, []);
   const [isSelectionModeOn, toggleSelectionMode] = useState(false);
 
   useEffect(() => {
-    dispatchMatrices({
-      type: MatrixActionTypes.ADD_MATRIX,
-      payload: {
-        matrix: [
+    let savedMatrices: StoredMatrixObject[] | string | null = null;
+
+    savedMatrices = localStorage.getItem('recent-matrices');
+
+    let defaultMatrices: StoredMatrixObject[] = [
+      {
+        color: genRandomColor(),
+        id: crypto.randomUUID(),
+        table: [
           [1, 2],
           [3, 4],
         ],
       },
-    });
-    dispatchMatrices({
-      type: MatrixActionTypes.ADD_MATRIX,
-      payload: {
-        matrix: [
+      {
+        color: genRandomColor(),
+        id: crypto.randomUUID(),
+        table: [
           [5, 2],
           [3, 7],
         ],
       },
-    });
-    dispatchMatrices({
-      type: MatrixActionTypes.ADD_MATRIX,
-      payload: {
-        matrix: [
+      {
+        color: genRandomColor(),
+        id: crypto.randomUUID(),
+        table: [
           [9, 10],
           [3, 11],
         ],
       },
-    });
+    ];
+
+    if (savedMatrices === null && !matrices.length) {
+      localStorage.setItem('recent-matrices', JSON.stringify(defaultMatrices));
+    }
+
+    if (savedMatrices !== null && !matrices.length) {
+      savedMatrices = JSON.parse(savedMatrices);
+      (savedMatrices as StoredMatrixObject[]).forEach((m) => {
+        dispatchMatrices({
+          type: MatrixActionTypes.ADD_MATRIX,
+          payload: { ...m, saveOnLocalStorage: false },
+        });
+      });
+    }
   }, []);
 
   return (
@@ -193,10 +249,10 @@ const GeneralContextProvider: React.FC<{
         selectedColorsArray,
         setSelectedColorsArray,
         matrices,
-        createMatrix(matrix, matrixProductSteps) {
+        createMatrix(table, productSteps) {
           dispatchMatrices({
             type: MatrixActionTypes.ADD_MATRIX,
-            payload: { matrix, matrixProductSteps },
+            payload: { table, productSteps, saveOnLocalStorage: true },
           });
         },
         deleteMatrix(matrixId) {

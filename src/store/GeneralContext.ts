@@ -11,10 +11,7 @@ interface MatrixContextObject {
   isSelectionModeOn: boolean;
   toggleSelectionMode(cb: (currentState: boolean) => boolean): void;
   matrices: MatrixObject[];
-  createMatrix(
-    matrix?: NumberTable,
-    matrixProductSteps?: MatrixProductSteps
-  ): void;
+  createMatrix(table?: NumberTable, productSteps?: MatrixProductSteps): void;
   updateMatrixValue(
     matrixId: string,
     rowIdx: number,
@@ -38,10 +35,7 @@ const MatrixContext = React.createContext<MatrixContextObject>({
   isSelectionModeOn: true,
   toggleSelectionMode(cb: (currentState: boolean) => boolean) {},
   matrices: [],
-  createMatrix(
-    matrix?: NumberTable,
-    matrixProductSteps?: MatrixProductSteps
-  ) {},
+  createMatrix(table?: NumberTable, productSteps?: MatrixProductSteps) {},
   updateMatrixSize(
     matrixId: string,
     newSize: { newNRows: number | null; newNCols: number | null }

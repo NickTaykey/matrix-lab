@@ -12,6 +12,7 @@ code {
     monospace;
 }
 
-.matrix:hover {
+.matrix:hover,
+button:hover {
   cursor: pointer;
 }

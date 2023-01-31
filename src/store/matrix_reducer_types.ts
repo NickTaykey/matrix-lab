@@ -7,6 +7,13 @@ export enum MatrixTypes {
   PRODUCT,
 }
 
+export type StoredMatrixObject = {
+  table: NumberTable;
+  productSteps?: MatrixProductSteps;
+  color: string;
+  id: string;
+};
+
 export type DeterminantStep = {
   currentCell: number;
   submatrix: NumberTable | null;
@@ -38,7 +45,7 @@ export type MatrixProductSteps = Array<ProductStep>;
 
 export interface MatrixProductObject extends MatrixObject {
   type: MatrixTypes.PRODUCT;
-  matrixProductSteps: MatrixProductSteps;
+  productSteps: MatrixProductSteps;
 }
 
 export enum MatrixActionTypes {
@@ -51,8 +58,11 @@ export enum MatrixActionTypes {
 interface AddMatrixAction {
   type: MatrixActionTypes.ADD_MATRIX;
   payload: {
-    matrixProductSteps?: MatrixProductSteps;
-    matrix?: NumberTable;
+    productSteps?: MatrixProductSteps;
+    saveOnLocalStorage?: boolean;
+    table?: NumberTable;
+    color?: string;
+    id?: string;
   };
 }
 

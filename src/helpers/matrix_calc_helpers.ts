@@ -46,10 +46,10 @@ function getMatrixDeterminant(matrix: number[][]): Determinant {
   const n = matrix.length;
 
   if (n === 1) {
-    console.log({
+    /* console.log({
       result: matrix[0][0],
       steps: null,
-    });
+    }); */
     return {
       result: matrix[0][0],
       steps: null,
@@ -80,7 +80,7 @@ function getMatrixDeterminant(matrix: number[][]): Determinant {
 
     result += matrix[0][i] * subdet.result * (i % 2 === 0 ? 1 : -1);
   }
-  console.log({ result, steps });
+  // console.log({ result, steps });
   return { result, steps };
 }
 
