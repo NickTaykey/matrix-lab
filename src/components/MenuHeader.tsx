@@ -24,8 +24,12 @@ const MenuHeader = () => {
       return m.table.map((r) => {
         return r.map((n) => {
           const t = Number(n);
-          if (isNaN(t)) {
-            generalContext.setErrorMessage(`Invalid value ${t} in matrix ${i}`);
+          if ((typeof n === 'string' && !n.length) || isNaN(t)) {
+            generalContext.setErrorMessage(
+              `Invalid value "${
+                typeof n === 'string' && n.length ? n : ''
+              }" in matrix ${i}`
+            );
             foundNotValidMatrix = true;
           }
           return t;

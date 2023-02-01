@@ -1,6 +1,6 @@
 import ReadOnlyMatrix, { GroupColorState, CellCoords } from './ReadOnlyMatrix';
 import type { ProductStep } from '../store/matrix_reducer_types';
-import { genRandomColor } from '../store/GeneralContextProvider';
+import { genRandomColor } from '../helpers/color_utils';
 import * as fa from 'react-icons/fa';
 import { useState } from 'react';
 
@@ -97,16 +97,25 @@ const ProductStepView = (props: ProductStep) => {
               <ReadOnlyMatrix
                 matrix={mat}
                 cellsColorState={cellColors}
+                defaultTextColor="black"
                 onCellClick={cellClickHandler}
               />
             </>
           ) : idx % 2 === 0 ? (
             <>
-              <ReadOnlyMatrix matrix={mat} rowColors={computeRowColors()} />
+              <ReadOnlyMatrix
+                matrix={mat}
+                rowColors={computeRowColors()}
+                defaultTextColor="black"
+              />
               <fa.FaTimes style={{ margin: '0 2rem' }} />
             </>
           ) : (
-            <ReadOnlyMatrix matrix={mat} colColors={computeColColors()} />
+            <ReadOnlyMatrix
+              matrix={mat}
+              colColors={computeColColors()}
+              defaultTextColor="black"
+            />
           )}
         </section>
       ))}
@@ -115,6 +124,7 @@ const ProductStepView = (props: ProductStep) => {
         matrix={props.decomposedResult}
         cellsColorState={cellColors}
         onCellClick={cellClickHandler}
+        defaultTextColor={'black'}
       />
     </article>
   );

@@ -1,10 +1,10 @@
 import { MatrixProductObject } from '../store/matrix_reducer_types';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import GeneralContext from '../store/GeneralContext';
 import ProductStep from './ProductStepView';
 import { useContext } from 'react';
 
-const ProductModal = () => {
+const ProductSteps = () => {
   const generalContext = useContext(GeneralContext);
   const { matrixId } = useParams();
   const navigate = useNavigate();
@@ -40,4 +40,4 @@ const ProductModal = () => {
   );
 };
 
-export default ProductModal;
+export default ProductSteps;

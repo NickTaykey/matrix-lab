@@ -19,6 +19,10 @@ export type DeterminantStep = {
   submatrix: NumberTable | null;
   submatrixDeterminantSteps: DeterminantStep[] | null;
   coords: [number, number];
+  cellStyle: {
+    backgroundColor: string;
+    color: string;
+  };
 };
 
 export type Determinant = {

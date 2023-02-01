@@ -1,4 +1,5 @@
 import { Determinant, DeterminantStep } from '../store/matrix_reducer_types';
+import { genRandomColor, isColorDark } from './color_utils';
 
 export type NumberTable = Array<number[]>;
 
@@ -41,7 +42,7 @@ function matrixProduct(m1: NumberTable, m2: NumberTable) {
   return { productMat, productString };
 }
 
-function getMatrixDeterminant(matrix: number[][]): Determinant {
+function getDeterminantAndSteps(matrix: number[][]): Determinant {
   const steps: DeterminantStep[] = [];
   const n = matrix.length;
 
@@ -69,19 +70,24 @@ function getMatrixDeterminant(matrix: number[][]): Determinant {
       submatrix.push(row);
     }
 
-    const subdet = getMatrixDeterminant(submatrix);
+    const subdet = getDeterminantAndSteps(submatrix);
+
+    const backgroundColor = genRandomColor();
 
     steps.push({
       submatrixDeterminantSteps: subdet.steps,
       currentCell: matrix[0][i],
       coords: [1, i + 1],
+      cellStyle: {
+        color: isColorDark(backgroundColor) ? 'white' : 'black',
+        backgroundColor,
+      },
       submatrix,
     });
 
     result += matrix[0][i] * subdet.result * (i % 2 === 0 ? 1 : -1);
   }
-  // console.log({ result, steps });
   return { result, steps };
 }
 
-export { matrixProduct, getMatrixDeterminant };
+export { matrixProduct, getDeterminantAndSteps };

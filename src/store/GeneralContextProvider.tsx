@@ -7,9 +7,10 @@ import {
   MatrixTypes,
   Table,
 } from './matrix_reducer_types';
-import { getMatrixDeterminant } from '../helpers/matrix_calc_helpers';
+import { getDeterminantAndSteps } from '../helpers/matrix_calc_helpers';
 import MatrixContext, { NumberTable } from './GeneralContext';
 import { useEffect, useReducer, useState } from 'react';
+import { genRandomColor } from '../helpers/color_utils';
 
 const updateLocalStorage = (
   matrices: (MatrixObject | MatrixProductObject)[]
@@ -25,13 +26,6 @@ const updateLocalStorage = (
       }))
     )
   );
-};
-
-export const genRandomColor = () => {
-  const r = Math.round(Math.random() * 255);
-  const g = Math.round(Math.random() * 255);
-  const b = Math.round(Math.random() * 255);
-  return `rgb(${r}, ${g}, ${b})`;
 };
 
 const isNumberTable = (table: Table) => {
@@ -69,7 +63,7 @@ const GeneralContextProvider: React.FC<{
 
         const determinant =
           table && isNumberTable(table)
-            ? getMatrixDeterminant(table as NumberTable)
+            ? getDeterminantAndSteps(table as NumberTable)
             : null;
 
         let matrixObj = {
@@ -128,7 +122,7 @@ const GeneralContextProvider: React.FC<{
               ...m,
               table: updatedTable,
               determinant: calculateDeterminant
-                ? getMatrixDeterminant(updatedTable as NumberTable)
+                ? getDeterminantAndSteps(updatedTable as NumberTable)
                 : null,
             };
           }
