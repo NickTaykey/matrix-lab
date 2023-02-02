@@ -1,7 +1,7 @@
-import GeneralContext from '../store/GeneralContext';
+import GeneralContext from '../../store/GeneralContext';
 import MenuHeader from './MenuHeader';
 import { useContext } from 'react';
-import Matrix from './Matrix';
+import Matrix from '../Matrix/Matrix';
 
 const Menu = () => {
   const generalContext = useContext(GeneralContext);

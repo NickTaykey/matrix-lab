@@ -17,7 +17,7 @@ export type StoredMatrixObject = {
 export type DeterminantStep = {
   currentCell: number;
   submatrix: NumberTable | null;
-  submatrixDeterminantSteps: DeterminantStep[] | null;
+  submatrixDeterminant: { result: number; steps: DeterminantStep[] | null };
   coords: [number, number];
   cellStyle: {
     backgroundColor: string;

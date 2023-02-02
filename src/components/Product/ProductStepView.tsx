@@ -1,6 +1,9 @@
-import ReadOnlyMatrix, { GroupColorState, CellCoords } from './ReadOnlyMatrix';
-import type { ProductStep } from '../store/matrix_reducer_types';
-import { genRandomColor } from '../helpers/color_utils';
+import ReadOnlyMatrix, {
+  GroupColorState,
+  CellCoords,
+} from '../Matrix/ReadOnlyMatrix';
+import type { ProductStep } from '../../store/matrix_reducer_types';
+import { genRandomColor } from '../../helpers/color_utils';
 import * as fa from 'react-icons/fa';
 import { useState } from 'react';
 

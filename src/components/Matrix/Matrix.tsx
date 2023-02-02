@@ -2,8 +2,8 @@ import {
   MatrixObject,
   MatrixProductObject,
   MatrixTypes,
-} from '../store/matrix_reducer_types';
-import GeneralContext from '../store/GeneralContext';
+} from '../../store/matrix_reducer_types';
+import GeneralContext from '../../store/GeneralContext';
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import React from 'react';
@@ -98,7 +98,7 @@ const Matrix = (props: MatrixProps) => {
           <Link to={`/product-steps/${props.matrix.id}`}>Product Steps</Link>
         )}
       </header>
-      <table>
+      <table style={{ margin: '1rem 0' }}>
         <tbody>
           {props.matrix.table.map((row, rowIdx) => (
             <tr key={rowIdx}>
@@ -115,12 +115,20 @@ const Matrix = (props: MatrixProps) => {
           ))}
         </tbody>
       </table>
-      {props.matrix.determinant && (
-        <footer>
+      {props.matrix.determinant !== null && (
+        <footer style={{ display: 'flex', flexDirection: 'column' }}>
           <div>Determinant: {props.matrix.determinant.result}</div>
-          <Link to={`/determinant-steps/${props.matrix.id}`}>
+          <Link
+            to={`/determinant-steps/${props.matrix.id}`}
+            style={{ margin: '1rem 0' }}
+          >
             Determinant Steps
           </Link>
+          {props.matrix.determinant.result !== 0 && (
+            <Link to={`/inverse-steps/${props.matrix.id}`}>
+              Inverse Matrix Steps
+            </Link>
+          )}
         </footer>
       )}
     </article>

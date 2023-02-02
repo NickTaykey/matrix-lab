@@ -1,14 +1,16 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MatrixContextProvider from './store/GeneralContextProvider';
-import DeterminantSteps from './components/DeterminantSteps';
-import ProductSteps from './components/ProductSteps';
-import Menu from './components/Menu';
+import DeterminantSteps from './components/Determinant/DeterminantSteps';
+import ProductSteps from './components/Product/ProductSteps';
+import InverseSteps from './components/Inverse/InverseSteps';
+import Menu from './components/Menu/Menu';
 import './App.css';
 
 const router = createBrowserRouter([
   { path: '/', element: <Menu /> },
   { path: '/product-steps/:matrixId', element: <ProductSteps /> },
   { path: '/determinant-steps/:matrixId', element: <DeterminantSteps /> },
+  { path: '/inverse-steps/:matrixId', element: <InverseSteps /> },
 ]);
 
 function App() {

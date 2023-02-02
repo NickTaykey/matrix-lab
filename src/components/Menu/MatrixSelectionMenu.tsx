@@ -1,4 +1,4 @@
-import GeneralContext from '../store/GeneralContext';
+import GeneralContext from '../../store/GeneralContext';
 import { useContext } from 'react';
 
 const MatrixSelectionMenu = () => {

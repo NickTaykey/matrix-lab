@@ -1,11 +1,11 @@
 import {
   MatrixObject,
   MatrixProductSteps,
-} from '../store/matrix_reducer_types';
-import GeneralContext, { NumberTable } from '../store/GeneralContext';
-import { matrixProduct } from '../helpers/matrix_calc_helpers';
+} from '../../store/matrix_reducer_types';
+import GeneralContext, { NumberTable } from '../../store/GeneralContext';
+import { matrixProduct } from '../../helpers/matrix_calc_helpers';
 import MatrixSelectionMenu from './MatrixSelectionMenu';
-import ErrorAlert from '../components/ErrorAlert';
+import ErrorAlert from '../../components/ErrorAlert';
 import { useContext } from 'react';
 
 const MenuHeader = () => {

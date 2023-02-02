@@ -42,15 +42,11 @@ function matrixProduct(m1: NumberTable, m2: NumberTable) {
   return { productMat, productString };
 }
 
-function getDeterminantAndSteps(matrix: number[][]): Determinant {
+function getDeterminantAndSteps(matrix: NumberTable): Determinant {
   const steps: DeterminantStep[] = [];
   const n = matrix.length;
 
   if (n === 1) {
-    /* console.log({
-      result: matrix[0][0],
-      steps: null,
-    }); */
     return {
       result: matrix[0][0],
       steps: null,
@@ -75,7 +71,7 @@ function getDeterminantAndSteps(matrix: number[][]): Determinant {
     const backgroundColor = genRandomColor();
 
     steps.push({
-      submatrixDeterminantSteps: subdet.steps,
+      submatrixDeterminant: subdet,
       currentCell: matrix[0][i],
       coords: [1, i + 1],
       cellStyle: {
@@ -87,7 +83,41 @@ function getDeterminantAndSteps(matrix: number[][]): Determinant {
 
     result += matrix[0][i] * subdet.result * (i % 2 === 0 ? 1 : -1);
   }
+
   return { result, steps };
 }
 
-export { matrixProduct, getDeterminantAndSteps };
+function invertMatrix(matrix: NumberTable): NumberTable {
+  const n = matrix.length;
+  const identity: NumberTable = [];
+  for (let i = 0; i < n; i++) {
+    identity.push([]);
+    for (let j = 0; j < n; j++) {
+      identity[i][j] = i === j ? 1 : 0;
+    }
+  }
+  for (let i = 0; i < n; i++) {
+    let pivot = i;
+    for (let j = i + 1; j < n; j++) {
+      if (Math.abs(matrix[j][i]) > Math.abs(matrix[pivot][i])) {
+        pivot = j;
+      }
+    }
+    if (pivot !== i) {
+      [matrix[i], matrix[pivot]] = [matrix[pivot], matrix[i]];
+      [identity[i], identity[pivot]] = [identity[pivot], identity[i]];
+    }
+    const scale = 1 / matrix[i][i];
+    matrix[i] = matrix[i].map((x) => x * scale);
+    identity[i] = identity[i].map((x) => x * scale);
+    for (let j = 0; j < n; j++) {
+      if (j === i) continue;
+      const factor = matrix[j][i];
+      matrix[j] = matrix[j].map((x, k) => x - factor * matrix[i][k]);
+      identity[j] = identity[j].map((x, k) => x - factor * identity[i][k]);
+    }
+  }
+  return identity;
+}
+
+export { matrixProduct, getDeterminantAndSteps, invertMatrix };

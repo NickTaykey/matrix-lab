@@ -1,7 +1,7 @@
-import { NumberTable } from '../helpers/matrix_calc_helpers';
+import { NumberTable } from '../../helpers/matrix_calc_helpers';
 import { useNavigate, useParams } from 'react-router-dom';
 import DeterminantStepsView from './DeterminantStepsView';
-import GeneralContext from '../store/GeneralContext';
+import GeneralContext from '../../store/GeneralContext';
 import { useContext } from 'react';
 
 const DeterminantSteps = () => {

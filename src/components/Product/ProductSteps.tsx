@@ -1,6 +1,6 @@
-import { MatrixProductObject } from '../store/matrix_reducer_types';
+import { MatrixProductObject } from '../../store/matrix_reducer_types';
 import { useNavigate, useParams } from 'react-router-dom';
-import GeneralContext from '../store/GeneralContext';
+import GeneralContext from '../../store/GeneralContext';
 import ProductStep from './ProductStepView';
 import { useContext } from 'react';
 

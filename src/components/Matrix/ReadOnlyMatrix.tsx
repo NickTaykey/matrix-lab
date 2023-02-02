@@ -1,5 +1,5 @@
-import { Table } from '../store/matrix_reducer_types';
-import { isColorDark } from '../helpers/color_utils';
+import { Table } from '../../store/matrix_reducer_types';
+import { isColorDark } from '../../helpers/color_utils';
 
 export type GroupColorState = {
   clickTimeStamp: number;

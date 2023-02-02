@@ -1,10 +1,9 @@
 import {
   getDeterminantAndSteps,
   NumberTable,
-} from '../helpers/matrix_calc_helpers';
-import { genRandomColor, isColorDark } from '../helpers/color_utils';
+} from '../../helpers/matrix_calc_helpers';
 import DeterminantStepView from './DeterminantStepView';
-import ReadOnlyMatrix from './ReadOnlyMatrix';
+import ReadOnlyMatrix from '../Matrix/ReadOnlyMatrix';
 import * as fa from 'react-icons/fa';
 
 interface DeterminantStepsViewProps {
@@ -14,22 +13,12 @@ interface DeterminantStepsViewProps {
 
 const DeterminantStepsView = (props: DeterminantStepsViewProps) => {
   const { result, steps } = getDeterminantAndSteps(props.matrix);
-  let backgroundColor = 'white';
-  let textColor = 'black';
-
-  if (!props.topLevel) {
-    backgroundColor = genRandomColor(1);
-    textColor = isColorDark(backgroundColor) ? 'white' : 'black';
-  }
 
   return (
     <>
-      {!props.topLevel && <hr />}
       <section
         style={{
-          backgroundColor,
           padding: '1rem 0',
-          color: textColor,
           textAlign: 'center',
         }}
       >
@@ -43,9 +32,7 @@ const DeterminantStepsView = (props: DeterminantStepsViewProps) => {
           <article style={{ marginBottom: '2rem' }}>
             <ReadOnlyMatrix
               matrix={props.matrix}
-              defaultTextColor={
-                isColorDark(backgroundColor) ? 'white' : 'black'
-              }
+              defaultTextColor="black"
               highlightedCells={
                 steps
                   ? steps.map((s) => ({
@@ -57,28 +44,43 @@ const DeterminantStepsView = (props: DeterminantStepsViewProps) => {
               }
             />
           </article>
-          {steps!.map((step, stepIdx) => (
-            <article
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-              key={`determinat-step-${stepIdx}`}
-            >
-              <DeterminantStepView
-                determinantSteps={step}
-                textColor={textColor}
-              />
-              <fa.FaEquals
+          {steps &&
+            steps.map((step, stepIdx) => (
+              <article
                 style={{
-                  margin: '1rem 0',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
                 }}
-              />
-            </article>
-          ))}
+                key={`determinat-step-${stepIdx}`}
+              >
+                <DeterminantStepView
+                  determinantSteps={step}
+                  textColor="black"
+                />
+                {props.topLevel && (
+                  <>
+                    {stepIdx === steps.length - 1 ? (
+                      <fa.FaEquals
+                        style={{
+                          margin: '1rem 0',
+                        }}
+                      />
+                    ) : (
+                      <fa.FaPlus
+                        style={{
+                          margin: '1rem 0',
+                        }}
+                      />
+                    )}
+                  </>
+                )}
+              </article>
+            ))}
         </main>
-        <footer style={{ marginTop: '2rem' }}>{result}</footer>
+        {props.topLevel && (
+          <footer style={{ marginTop: '2rem' }}>{result}</footer>
+        )}
       </section>
     </>
   );
