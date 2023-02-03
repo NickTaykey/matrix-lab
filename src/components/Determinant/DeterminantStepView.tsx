@@ -65,36 +65,38 @@ const DeterminantStepView = ({
           </section>
         )}
       </section>
-      {submatrixDeterminant.steps && submatrixDeterminant.steps.length > 1 && (
-        <details style={{ marginTop: '1rem' }}>
-          <hr />
-          <summary>Show determinant steps</summary>
-          {submatrixDeterminant.steps.map((step, stepIdx) => (
-            <article key={`determinant-${crypto.randomUUID()}`}>
-              <DeterminantStepsView matrix={step.submatrix!} />
-              {stepIdx === submatrixDeterminant.steps!.length - 1 ? (
-                <>
-                  <fa.FaEquals
+      {submatrixDeterminant &&
+        submatrixDeterminant.steps &&
+        submatrixDeterminant.steps.length > 1 && (
+          <details style={{ marginTop: '1rem' }}>
+            <hr />
+            <summary>Show determinant steps</summary>
+            {submatrixDeterminant.steps.map((step, stepIdx) => (
+              <article key={`determinant-${crypto.randomUUID()}`}>
+                <DeterminantStepsView matrix={step.submatrix!} />
+                {stepIdx === submatrixDeterminant.steps!.length - 1 ? (
+                  <>
+                    <fa.FaEquals
+                      style={{
+                        margin: '1rem 0',
+                      }}
+                    />
+                    <footer style={{ marginTop: '2rem' }}>
+                      {submatrixDeterminant.result}
+                    </footer>
+                  </>
+                ) : (
+                  <fa.FaPlus
                     style={{
                       margin: '1rem 0',
                     }}
                   />
-                  <footer style={{ marginTop: '2rem' }}>
-                    {submatrixDeterminant.result}
-                  </footer>
-                </>
-              ) : (
-                <fa.FaPlus
-                  style={{
-                    margin: '1rem 0',
-                  }}
-                />
-              )}
-            </article>
-          ))}
-          <hr />
-        </details>
-      )}
+                )}
+              </article>
+            ))}
+            <hr />
+          </details>
+        )}
     </section>
   );
 };

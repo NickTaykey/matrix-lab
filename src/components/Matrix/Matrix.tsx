@@ -14,9 +14,10 @@ interface MatrixProps {
 
 const Matrix = (props: MatrixProps) => {
   const generalContext = useContext(GeneralContext);
+  const { table, determinant, id, color, nRows, nCols, type } = props.matrix;
 
   const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
-    generalContext.updateMatrixSize(props.matrix.id, {
+    generalContext.updateMatrixSize(id, {
       newNRows:
         e.currentTarget.name === 'nRows' ? Number(e.currentTarget.value) : null,
       newNCols:
@@ -29,12 +30,7 @@ const Matrix = (props: MatrixProps) => {
       .getAttribute('id')!
       .split('-')
       .map((v) => Number(v));
-    generalContext.updateMatrixValue(
-      props.matrix.id,
-      rowIdx,
-      colIdx,
-      e.currentTarget.value
-    );
+    generalContext.updateMatrixValue(id, rowIdx, colIdx, e.currentTarget.value);
   };
 
   return (
@@ -45,7 +41,7 @@ const Matrix = (props: MatrixProps) => {
         flexDirection: 'column',
         padding: '2rem',
         margin: '0 2rem 2rem 2rem',
-        border: `5px solid ${props.matrix.color}`,
+        border: `5px solid ${color}`,
       }}
     >
       <header style={{ display: 'flex', justifyContent: 'center' }}>
@@ -53,28 +49,26 @@ const Matrix = (props: MatrixProps) => {
           <fieldset>
             <input
               type="checkbox"
-              checked={generalContext.selectedColorsArray.includes(
-                props.matrix.color
-              )}
+              checked={generalContext.selectedColorsArray.includes(color)}
               onChange={() => {
                 generalContext.setSelectedColorsArray((arr) => {
-                  if (arr.includes(props.matrix.color)) {
-                    return arr.filter((c) => c !== props.matrix.color);
+                  if (arr.includes(color)) {
+                    return arr.filter((c) => c !== color);
                   }
-                  return [...arr, props.matrix.color];
+                  return [...arr, color];
                 });
               }}
             />
           </fieldset>
         )}
         <fieldset>
-          <label htmlFor={`matrix-${props.matrix.id}-rows-input`}>Rows</label>
+          <label htmlFor={`matrix-${id}-rows-input`}>Rows</label>
           <input
             type="number"
             name="nRows"
-            id={`matrix-${props.matrix.id}-rows-input`}
+            id={`matrix-${id}-rows-input`}
             onChange={updateMatrixSize}
-            value={props.matrix.nRows}
+            value={nRows}
             min="2"
             max="10"
           />
@@ -84,23 +78,21 @@ const Matrix = (props: MatrixProps) => {
           <input
             type="number"
             name="nCols"
-            id={`matrix-${props.matrix.id}-cols-input`}
+            id={`matrix-${id}-cols-input`}
             onChange={updateMatrixSize}
-            value={props.matrix.nCols}
+            value={nCols}
             min="2"
             max="10"
           />
         </fieldset>
-        <button onClick={() => generalContext.deleteMatrix(props.matrix.id)}>
-          Delete
-        </button>
-        {props.matrix.type === MatrixTypes.PRODUCT && (
-          <Link to={`/product-steps/${props.matrix.id}`}>Product Steps</Link>
+        <button onClick={() => generalContext.deleteMatrix(id)}>Delete</button>
+        {type === MatrixTypes.PRODUCT && (
+          <Link to={`/product-steps/${id}`}>Product Steps</Link>
         )}
       </header>
       <table style={{ margin: '1rem 0' }}>
         <tbody>
-          {props.matrix.table.map((row, rowIdx) => (
+          {table.map((row, rowIdx) => (
             <tr key={rowIdx}>
               {row.map((cell, cellIdx) => (
                 <td key={`${rowIdx}-${cellIdx}`}>
@@ -115,19 +107,14 @@ const Matrix = (props: MatrixProps) => {
           ))}
         </tbody>
       </table>
-      {props.matrix.determinant !== null && (
+      {determinant !== null && table.length === table[0].length && (
         <footer style={{ display: 'flex', flexDirection: 'column' }}>
-          <div>Determinant: {props.matrix.determinant.result}</div>
-          <Link
-            to={`/determinant-steps/${props.matrix.id}`}
-            style={{ margin: '1rem 0' }}
-          >
+          <div>Determinant: {determinant.result}</div>
+          <Link to={`/determinant-steps/${id}`} style={{ margin: '1rem 0' }}>
             Determinant Steps
           </Link>
-          {props.matrix.determinant.result !== 0 && (
-            <Link to={`/inverse-steps/${props.matrix.id}`}>
-              Inverse Matrix Steps
-            </Link>
+          {determinant.result !== 0 && (
+            <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
           )}
         </footer>
       )}

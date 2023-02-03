@@ -71,7 +71,7 @@ function getDeterminantAndSteps(matrix: NumberTable): Determinant {
     const backgroundColor = genRandomColor();
 
     steps.push({
-      submatrixDeterminant: subdet,
+      submatrixDeterminant: submatrix.length > 2 ? subdet : null,
       currentCell: matrix[0][i],
       coords: [1, i + 1],
       cellStyle: {
@@ -120,4 +120,40 @@ function invertMatrix(matrix: NumberTable): NumberTable {
   return identity;
 }
 
-export { matrixProduct, getDeterminantAndSteps, invertMatrix };
+function decimalToFraction(decimal: number): {
+  numerator: number;
+  denominator: number;
+} {
+  const tolerance = 1.0e-6;
+  let sign = decimal > 0 ? 1 : -1;
+  decimal = Math.abs(decimal);
+  if (Math.abs(Math.round(decimal) - decimal) < tolerance) {
+    return { numerator: sign * Math.round(decimal), denominator: 1 };
+  }
+  let n = decimal;
+  let d = 1;
+  let h1 = 1;
+  let h2 = 0;
+  let k1 = 0;
+  let k2 = 1;
+  while (Math.abs(n / d - decimal) > tolerance) {
+    let x = Math.floor(n / d);
+    let y = n % d;
+    let j = h1 * x + h2;
+    let k = k1 * x + k2;
+    h1 = h2;
+    h2 = j;
+    k1 = k2;
+    k2 = k;
+    k = d;
+    d = y;
+  }
+  return { numerator: sign * h2, denominator: k2 };
+}
+
+export {
+  matrixProduct,
+  getDeterminantAndSteps,
+  invertMatrix,
+  decimalToFraction,
+};
