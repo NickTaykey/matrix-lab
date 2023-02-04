@@ -28,7 +28,7 @@ const updateLocalStorage = (
   );
 };
 
-const isNumberTable = (table: Table) => {
+export const isNumberTable = (table: Table) => {
   return table.every((row) => {
     return row.every((c) => typeof c === 'number');
   });

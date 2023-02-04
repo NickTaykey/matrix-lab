@@ -1,5 +1,6 @@
 import { Determinant, DeterminantStep } from '../store/matrix_reducer_types';
 import { genRandomColor, isColorDark } from './color_utils';
+import Fraction from 'fraction.js';
 
 export type NumberTable = Array<number[]>;
 
@@ -92,6 +93,7 @@ interface Step {
   rightMatrix: NumberTable;
   row: number | null;
   scale: number | null;
+  message: string;
 }
 
 function inverseMatrixWithScaleReduction(matrix: NumberTable) {
@@ -109,6 +111,7 @@ function inverseMatrixWithScaleReduction(matrix: NumberTable) {
     rightMatrix: identity.slice(),
     row: null,
     scale: null,
+    message: 'Write identity matrix after original matrix.',
   });
 
   let inverse: NumberTable;
@@ -132,6 +135,9 @@ function inverseMatrixWithScaleReduction(matrix: NumberTable) {
             rightMatrix: identityCopy,
             row: j,
             scale: scale,
+            message: `Add ${new Fraction(scale).toFraction()} times row ${
+              i + 1
+            } to row ${j + 1}`,
           });
           lastIdentity = identityCopy;
           lastMatrix = matrixCopy;
@@ -153,6 +159,7 @@ function inverseMatrixWithScaleReduction(matrix: NumberTable) {
         rightMatrix: identityCopy,
         row: i,
         scale: scale,
+        message: `Multiply row ${i + 1} by ${new Fraction(scale).toFraction()}`,
       });
       lastIdentity = identityCopy;
       lastMatrix = matrixCopy;

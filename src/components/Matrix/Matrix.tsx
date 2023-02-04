@@ -7,6 +7,7 @@ import GeneralContext from '../../store/GeneralContext';
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import React from 'react';
+import { isNumberTable } from '../../store/GeneralContextProvider';
 
 interface MatrixProps {
   matrix: MatrixObject | MatrixProductObject;
@@ -107,17 +108,19 @@ const Matrix = (props: MatrixProps) => {
           ))}
         </tbody>
       </table>
-      {determinant !== null && table.length === table[0].length && (
-        <footer style={{ display: 'flex', flexDirection: 'column' }}>
-          <div>Determinant: {determinant.result}</div>
-          <Link to={`/determinant-steps/${id}`} style={{ margin: '1rem 0' }}>
-            Determinant Steps
-          </Link>
-          {determinant.result !== 0 && (
-            <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
-          )}
-        </footer>
-      )}
+      {determinant !== null &&
+        table.length === table[0].length &&
+        isNumberTable(table) && (
+          <footer style={{ display: 'flex', flexDirection: 'column' }}>
+            <div>Determinant: {determinant.result}</div>
+            <Link to={`/determinant-steps/${id}`} style={{ margin: '1rem 0' }}>
+              Determinant Steps
+            </Link>
+            {determinant.result !== 0 && (
+              <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
+            )}
+          </footer>
+        )}
     </article>
   );
 };
