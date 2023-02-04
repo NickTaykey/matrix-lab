@@ -73,6 +73,7 @@ const ReadOnlyMatrix = ({
                   key={`${rowIdx}-${colIdx}`}
                   id={`${rowIdx}-${colIdx}`}
                   style={{
+                    width: '80px',
                     padding: '1rem',
                     backgroundColor:
                       highlightedCells &&

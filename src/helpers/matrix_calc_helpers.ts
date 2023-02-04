@@ -87,73 +87,83 @@ function getDeterminantAndSteps(matrix: NumberTable): Determinant {
   return { result, steps };
 }
 
-function invertMatrix(matrix: NumberTable): NumberTable {
-  const n = matrix.length;
-  const identity: NumberTable = [];
-  for (let i = 0; i < n; i++) {
-    identity.push([]);
-    for (let j = 0; j < n; j++) {
-      identity[i][j] = i === j ? 1 : 0;
-    }
-  }
-  for (let i = 0; i < n; i++) {
-    let pivot = i;
-    for (let j = i + 1; j < n; j++) {
-      if (Math.abs(matrix[j][i]) > Math.abs(matrix[pivot][i])) {
-        pivot = j;
-      }
-    }
-    if (pivot !== i) {
-      [matrix[i], matrix[pivot]] = [matrix[pivot], matrix[i]];
-      [identity[i], identity[pivot]] = [identity[pivot], identity[i]];
-    }
-    const scale = 1 / matrix[i][i];
-    matrix[i] = matrix[i].map((x) => x * scale);
-    identity[i] = identity[i].map((x) => x * scale);
-    for (let j = 0; j < n; j++) {
-      if (j === i) continue;
-      const factor = matrix[j][i];
-      matrix[j] = matrix[j].map((x, k) => x - factor * matrix[i][k]);
-      identity[j] = identity[j].map((x, k) => x - factor * identity[i][k]);
-    }
-  }
-  return identity;
+interface Step {
+  leftMatrix: NumberTable;
+  rightMatrix: NumberTable;
+  row: number | null;
+  scale: number | null;
 }
 
-function decimalToFraction(decimal: number): {
-  numerator: number;
-  denominator: number;
-} {
-  const tolerance = 1.0e-6;
-  let sign = decimal > 0 ? 1 : -1;
-  decimal = Math.abs(decimal);
-  if (Math.abs(Math.round(decimal) - decimal) < tolerance) {
-    return { numerator: sign * Math.round(decimal), denominator: 1 };
+function inverseMatrixWithScaleReduction(matrix: NumberTable) {
+  const N = matrix.length;
+  let identity: NumberTable = [];
+  const steps: Step[] = [];
+
+  for (let i = 0; i < N; i++) {
+    identity.push(Array(N).fill(0));
+    identity[i][i] = 1;
   }
-  let n = decimal;
-  let d = 1;
-  let h1 = 1;
-  let h2 = 0;
-  let k1 = 0;
-  let k2 = 1;
-  while (Math.abs(n / d - decimal) > tolerance) {
-    let x = Math.floor(n / d);
-    let y = n % d;
-    let j = h1 * x + h2;
-    let k = k1 * x + k2;
-    h1 = h2;
-    h2 = j;
-    k1 = k2;
-    k2 = k;
-    k = d;
-    d = y;
+
+  steps.push({
+    leftMatrix: matrix.slice(),
+    rightMatrix: identity.slice(),
+    row: null,
+    scale: null,
+  });
+
+  let inverse: NumberTable;
+  let lastMatrix: NumberTable = matrix;
+  let lastIdentity: NumberTable = identity;
+
+  for (let i = 0; i < N; i++) {
+    for (let j = 0; j < N; j++) {
+      if (i !== j) {
+        let scale = -lastMatrix[j][i] / lastMatrix[i][i];
+        const matrixCopy = lastMatrix.map((r) => r.map((v) => v));
+        const identityCopy = lastIdentity.map((r) => r.map((v) => v));
+
+        if (scale !== 0 && isFinite(scale)) {
+          for (let k = 0; k < N; k++) {
+            matrixCopy[j][k] += scale * matrixCopy[i][k];
+            identityCopy[j][k] += scale * identityCopy[i][k];
+          }
+          steps.push({
+            leftMatrix: matrixCopy,
+            rightMatrix: identityCopy,
+            row: j,
+            scale: scale,
+          });
+          lastIdentity = identityCopy;
+          lastMatrix = matrixCopy;
+        }
+      }
+    }
   }
-  return { numerator: sign * h2, denominator: k2 };
+
+  for (let i = 0; i < N; i++) {
+    let scale = 1 / lastMatrix[i][i];
+    if (isFinite(scale)) {
+      const matrixCopy = lastMatrix.map((r) => r.map((v) => v));
+      const identityCopy = lastIdentity.map((r) => r.map((v) => v));
+      matrixCopy[i] = matrixCopy[i].map((x) => x * scale);
+      identityCopy[i] = identityCopy[i].map((x) => x * scale);
+      inverse = identityCopy;
+      steps.push({
+        leftMatrix: matrixCopy,
+        rightMatrix: identityCopy,
+        row: i,
+        scale: scale,
+      });
+      lastIdentity = identityCopy;
+      lastMatrix = matrixCopy;
+    }
+  }
+
+  return { table: inverse!, steps };
 }
 
 export {
   matrixProduct,
   getDeterminantAndSteps,
-  invertMatrix,
-  decimalToFraction,
+  inverseMatrixWithScaleReduction,
 };

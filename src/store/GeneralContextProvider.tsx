@@ -231,7 +231,7 @@ const GeneralContextProvider: React.FC<{
         });
       });
     }
-  }, []);
+  }, [matrices.length]);
 
   return (
     <MatrixContext.Provider
