@@ -186,6 +186,14 @@ function isolateEmptyRows(matrix: NumberTable): {
   return { newMatrix, nEmptyRows: idxEmptyRows.length };
 }
 
+function fillWithEmptyRows(matrix: NumberTable, nEmptyRows: number) {
+  return matrix.concat(
+    new Array(nEmptyRows)
+      .fill(null)
+      .map(() => new Array(matrix[0].length).fill(0))
+  );
+}
+
 function scaleReduction(matrix: NumberTable): {
   matrix: NumberTable;
   steps: Step[];
@@ -214,16 +222,10 @@ function scaleReduction(matrix: NumberTable): {
       let scaleFraction = new Fraction(scale).toFraction();
       steps.push({
         message: `Divide row ${i + 1} by ${scaleFraction}`,
-        matrix: copyMatrix(matrixCopy).concat(
-          new Array(nEmptyRows)
-            .fill(null)
-            .map(() => new Array(matrixCopy[0].length).fill(0))
-        ),
+        matrix: fillWithEmptyRows(copyMatrix(matrixCopy), nEmptyRows),
         rows: [i],
       });
     }
-
-    console.log(matrixCopy);
 
     for (let j = 0; j < lastMatrix.length; j++) {
       if (j !== i) {
@@ -234,11 +236,7 @@ function scaleReduction(matrix: NumberTable): {
         }
         let eliminationFraction = new Fraction(elimination).toFraction();
         steps.push({
-          matrix: copyMatrix(matrixCopy).concat(
-            new Array(nEmptyRows)
-              .fill(null)
-              .map(() => new Array(matrixCopy[0].length).fill(0))
-          ),
+          matrix: fillWithEmptyRows(copyMatrix(matrixCopy), nEmptyRows),
           message: `Row ${j + 1} minus ${eliminationFraction} times row ${
             i + 1
           }`,
