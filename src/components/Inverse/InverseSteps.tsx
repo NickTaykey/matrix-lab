@@ -2,12 +2,12 @@ import {
   inverseMatrixWithScaleReduction,
   NumberTable,
 } from '../../helpers/matrix_calc_helpers';
+import { genRandomColor } from '../../helpers/color_utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import GeneralContext from '../../store/GeneralContext';
 import ReadOnlyMatrix from '../Matrix/ReadOnlyMatrix';
 import { useContext } from 'react';
 import Fraction from 'fraction.js';
-import { genRandomColor } from '../../helpers/color_utils';
 
 const InverseSteps = () => {
   const generalContext = useContext(GeneralContext);
@@ -27,7 +27,6 @@ const InverseSteps = () => {
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
     >
       <button onClick={() => navigate('/')}>Back</button>
-
       {inverse ? (
         <>
           <h2>Inverse matrix:</h2>

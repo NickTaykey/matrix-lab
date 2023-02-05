@@ -108,19 +108,27 @@ const Matrix = (props: MatrixProps) => {
           ))}
         </tbody>
       </table>
-      {determinant !== null &&
-        table.length === table[0].length &&
-        isNumberTable(table) && (
-          <footer style={{ display: 'flex', flexDirection: 'column' }}>
-            <div>Determinant: {determinant.result}</div>
-            <Link to={`/determinant-steps/${id}`} style={{ margin: '1rem 0' }}>
-              Determinant Steps
-            </Link>
-            {determinant.result !== 0 && (
-              <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
-            )}
-          </footer>
-        )}
+      {isNumberTable(table) && (
+        <>
+          {determinant !== null && table.length === table[0].length && (
+            <footer style={{ display: 'flex', flexDirection: 'column' }}>
+              <div>Determinant: {determinant.result}</div>
+              <Link
+                to={`/determinant-steps/${id}`}
+                style={{ margin: '1rem 0' }}
+              >
+                Determinant Steps
+              </Link>
+              {determinant.result !== 0 && (
+                <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
+              )}
+            </footer>
+          )}
+          <Link to={`/rref/${id}`} style={{ marginTop: '1rem' }}>
+            rref matrix
+          </Link>
+        </>
+      )}
     </article>
   );
 };

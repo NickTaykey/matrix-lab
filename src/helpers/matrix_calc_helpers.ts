@@ -88,7 +88,7 @@ function getDeterminantAndSteps(matrix: NumberTable): Determinant {
   return { result, steps };
 }
 
-interface Step {
+interface InverseMatrixStep {
   leftMatrix: NumberTable;
   rightMatrix: NumberTable;
   row: number | null;
@@ -99,7 +99,7 @@ interface Step {
 function inverseMatrixWithScaleReduction(matrix: NumberTable) {
   const N = matrix.length;
   let identity: NumberTable = [];
-  const steps: Step[] = [];
+  const steps: InverseMatrixStep[] = [];
 
   for (let i = 0; i < N; i++) {
     identity.push(Array(N).fill(0));
@@ -169,8 +169,104 @@ function inverseMatrixWithScaleReduction(matrix: NumberTable) {
   return { table: inverse!, steps };
 }
 
+const copyMatrix = (m: NumberTable) => m.map((r) => r.slice());
+
+function isolateEmptyRows(matrix: NumberTable): {
+  newMatrix: NumberTable;
+  nEmptyRows: number;
+} {
+  const idxEmptyRows = matrix.reduce((acm, row, idx) => {
+    const isEmpty = row.every((c) => c === 0);
+    if (isEmpty) return [...acm, idx];
+    return acm;
+  }, [] as number[]);
+
+  const newMatrix = matrix.filter((_, idx) => !idxEmptyRows.includes(idx));
+
+  return { newMatrix, nEmptyRows: idxEmptyRows.length };
+}
+
+function scaleReduction(matrix: NumberTable): {
+  matrix: NumberTable;
+  steps: Step[];
+} {
+  const { newMatrix, nEmptyRows } = isolateEmptyRows(matrix);
+
+  let lastMatrix: NumberTable = nEmptyRows > 0 ? newMatrix : copyMatrix(matrix);
+  let matrixCopy: NumberTable;
+  let steps: Step[] = [];
+
+  steps.push({
+    matrix: copyMatrix(matrix),
+    message: `Start`,
+    rows: [],
+  });
+
+  for (let i = 0; i < lastMatrix.length; i++) {
+    matrixCopy = copyMatrix(lastMatrix);
+
+    let row = matrixCopy[i];
+    let scale = row[i];
+    if (scale !== 0 && scale !== 1) {
+      for (let j = 0; j < row.length; j++) {
+        row[j] /= scale;
+      }
+      let scaleFraction = new Fraction(scale).toFraction();
+      steps.push({
+        message: `Divide row ${i + 1} by ${scaleFraction}`,
+        matrix: copyMatrix(matrixCopy).concat(
+          new Array(nEmptyRows)
+            .fill(null)
+            .map(() => new Array(matrixCopy[0].length).fill(0))
+        ),
+        rows: [i],
+      });
+    }
+
+    console.log(matrixCopy);
+
+    for (let j = 0; j < lastMatrix.length; j++) {
+      if (j !== i) {
+        let elimination = matrixCopy[j][i];
+        if (elimination === 0) continue;
+        for (let k = 0; k < row.length; k++) {
+          matrixCopy[j][k] -= elimination * row[k];
+        }
+        let eliminationFraction = new Fraction(elimination).toFraction();
+        steps.push({
+          matrix: copyMatrix(matrixCopy).concat(
+            new Array(nEmptyRows)
+              .fill(null)
+              .map(() => new Array(matrixCopy[0].length).fill(0))
+          ),
+          message: `Row ${j + 1} minus ${eliminationFraction} times row ${
+            i + 1
+          }`,
+          rows: [j, i],
+        });
+      }
+    }
+    lastMatrix = matrixCopy;
+  }
+  return {
+    matrix: copyMatrix(lastMatrix).concat(
+      new Array(nEmptyRows)
+        .fill(null)
+        .map(() => new Array(matrixCopy[0].length).fill(0))
+    ),
+    steps,
+  };
+}
+
+interface Step {
+  matrix: NumberTable;
+  message: string;
+  rows: number[];
+}
+
 export {
   matrixProduct,
   getDeterminantAndSteps,
+  scaleReduction,
   inverseMatrixWithScaleReduction,
 };
