@@ -10,7 +10,8 @@ const ErrorAlert = (props: ErrorAlertProps) => (
       padding: '2rem',
       borderRadius: '0.5rem',
       width: '90%',
-      margin: '0 auto',
+      margin: 'auto',
+      marginTop: '1rem',
     }}
   >
     {props.message}

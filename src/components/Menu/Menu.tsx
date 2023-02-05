@@ -1,29 +1,30 @@
 import GeneralContext from '../../store/GeneralContext';
+import { SiMatrix } from 'react-icons/si';
 import MenuHeader from './MenuHeader';
-import { useContext } from 'react';
 import Matrix from '../Matrix/Matrix';
+import { useContext } from 'react';
 
 const Menu = () => {
   const generalContext = useContext(GeneralContext);
 
-  const createMatrix = () => {
-    generalContext.createMatrix();
-  };
-
   return (
     <>
-      <h1>Matrix calculator</h1>
-      <MenuHeader />
-      <main
+      <h1
         style={{
-          border: generalContext.isSelectionModeOn ? '4px solid blue' : 'none',
-          padding: '0 2rem 2rem 2rem',
+          textAlign: 'center',
+          margin: '2rem 0',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
+        <SiMatrix style={{ marginRight: '.5rem' }} /> Matrix lab
+      </h1>
+      <MenuHeader />
+      <main className="menu-grid" style={{ marginTop: '2rem' }}>
         {generalContext.matrices.map((mat) => (
           <Matrix matrix={mat} key={mat.id} />
         ))}
-        <button onClick={createMatrix}>New Matrix</button>
       </main>
     </>
   );

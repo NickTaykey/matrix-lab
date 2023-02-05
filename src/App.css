@@ -1,38 +1,91 @@
-.App {
-  text-align: center;
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+html,
+body {
+  margin: 0 auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+body {
+  width: 90%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+input[type='checkbox'] {
+  transform: scale(1.5);
+}
+
+.menu-grid {
   display: flex;
-  flex-direction: column;
+  flex-flow: row wrap;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.matrix-card {
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 0.5em;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.button {
+  border: none;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5em;
+  box-shadow: 2px 2px 6px 3px rgba(0, 0, 0, 0.43);
+  padding: 0.5rem;
+  text-decoration: none;
+  color: black;
+  text-align: center;
+  font-size: 1.25rem;
+  transition: box-shadow 0.5s ease-out;
+}
+
+.button:hover {
+  box-shadow: 2px 2px 6px 3px rgba(0, 0, 0, 0.2);
+}
+
+@media screen and (max-width: 1024px) {
+  html,
+  body {
+    margin: 0 auto;
+    width: 100%;
   }
-  to {
-    transform: rotate(360deg);
+
+  .menu-grid {
+    flex-direction: column;
+    align-items: center;
   }
+
+  .menu-header {
+    width: 90%;
+  }
+
+  .menu-header > fieldset {
+    width: 100%;
+  }
+
+  .menu-header,
+  .menu-header > fieldset {
+    margin: 0 auto !important;
+  }
+
+  .matrix-card {
+    padding: 1rem;
+    margin-right: 0;
+  }
+}
+
+.matrix:hover,
+button:hover {
+  cursor: pointer;
 }

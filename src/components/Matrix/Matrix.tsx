@@ -3,19 +3,33 @@ import {
   MatrixProductObject,
   MatrixTypes,
 } from '../../store/matrix_reducer_types';
-import GeneralContext from '../../store/GeneralContext';
-import { Link } from 'react-router-dom';
-import { useContext } from 'react';
-import React from 'react';
 import { isNumberTable } from '../../store/GeneralContextProvider';
+import { MdOutlineSpaceDashboard } from 'react-icons/md';
+import GeneralContext from '../../store/GeneralContext';
+import { FaRegTrashAlt, FaTimes } from 'react-icons/fa';
+import { fieldsetStyle, inputStyle } from '../styles';
+import { AiOutlineNumber } from 'react-icons/ai';
+import { TbAntennaBars5 } from 'react-icons/tb';
+import { Link } from 'react-router-dom';
+import { useContext, useState } from 'react';
+import React from 'react';
 
 interface MatrixProps {
   matrix: MatrixObject | MatrixProductObject;
 }
 
+const computeCellWidth = (nCells: number) => {
+  return (window.innerWidth - 150) / nCells;
+};
+
 const Matrix = (props: MatrixProps) => {
-  const generalContext = useContext(GeneralContext);
   const { table, determinant, id, color, nRows, nCols, type } = props.matrix;
+  const generalContext = useContext(GeneralContext);
+  const [computedCellWidth, setComputedCellWidth] = useState<number>(
+    computeCellWidth(table[0].length)
+  );
+
+  console.log(computedCellWidth);
 
   const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
     generalContext.updateMatrixSize(id, {
@@ -24,6 +38,9 @@ const Matrix = (props: MatrixProps) => {
       newNCols:
         e.currentTarget.name === 'nCols' ? Number(e.currentTarget.value) : null,
     });
+    if (e.currentTarget.name === 'nCols') {
+      setComputedCellWidth(computeCellWidth(Number(e.currentTarget.value)));
+    }
   };
 
   const updateCellValue = (e: React.FormEvent<HTMLInputElement>) => {
@@ -36,18 +53,22 @@ const Matrix = (props: MatrixProps) => {
 
   return (
     <article
-      className="matrix"
+      className="matrix-card"
       style={{
-        display: 'inline-flex',
-        flexDirection: 'column',
-        padding: '2rem',
-        margin: '0 2rem 2rem 2rem',
         border: `5px solid ${color}`,
       }}
     >
-      <header style={{ display: 'flex', justifyContent: 'center' }}>
+      <header>
         {generalContext.isSelectionModeOn && (
-          <fieldset>
+          <fieldset
+            style={{
+              ...fieldsetStyle,
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              background: 'linear-gradient(to right, #ffb347, #ffcc33)',
+            }}
+          >
             <input
               type="checkbox"
               checked={generalContext.selectedColorsArray.includes(color)}
@@ -62,34 +83,63 @@ const Matrix = (props: MatrixProps) => {
             />
           </fieldset>
         )}
-        <fieldset>
-          <label htmlFor={`matrix-${id}-rows-input`}>Rows</label>
-          <input
-            type="number"
-            name="nRows"
-            id={`matrix-${id}-rows-input`}
-            onChange={updateMatrixSize}
-            value={nRows}
-            min="2"
-            max="10"
-          />
-        </fieldset>
-        <fieldset>
-          <label htmlFor="cols-input">Columns</label>
-          <input
-            type="number"
-            name="nCols"
-            id={`matrix-${id}-cols-input`}
-            onChange={updateMatrixSize}
-            value={nCols}
-            min="2"
-            max="10"
-          />
-        </fieldset>
-        <button onClick={() => generalContext.deleteMatrix(id)}>Delete</button>
-        {type === MatrixTypes.PRODUCT && (
-          <Link to={`/product-steps/${id}`}>Product Steps</Link>
-        )}
+        <section style={{ display: 'flex', flexDirection: 'column' }}>
+          <section
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+            }}
+          >
+            <button
+              className="button"
+              onClick={() => generalContext.deleteMatrix(id)}
+              style={{
+                marginRight: type === MatrixTypes.PRODUCT ? '1rem' : 0,
+              }}
+            >
+              <FaRegTrashAlt />
+            </button>
+          </section>
+          <section style={{ display: 'flex', justifyContent: 'center' }}>
+            <fieldset style={fieldsetStyle}>
+              <label
+                htmlFor={`matrix-${id}-rows-input`}
+                style={{ marginRight: '.5rem' }}
+              >
+                Rows
+              </label>
+              <input
+                type="number"
+                style={inputStyle}
+                name="nRows"
+                id={`matrix-${id}-rows-input`}
+                onChange={updateMatrixSize}
+                value={nRows}
+                min="2"
+                max="10"
+              />
+            </fieldset>
+            <fieldset style={fieldsetStyle}>
+              <label
+                id={`matrix-${id}-cols-input`}
+                style={{ marginRight: '.5rem' }}
+              >
+                Cols
+              </label>
+              <input
+                type="number"
+                style={inputStyle}
+                name="nCols"
+                id={`matrix-${id}-cols-input`}
+                onChange={updateMatrixSize}
+                value={nCols}
+                min="2"
+                max="10"
+              />
+            </fieldset>
+          </section>
+        </section>
       </header>
       <table style={{ margin: '1rem 0' }}>
         <tbody>
@@ -98,6 +148,17 @@ const Matrix = (props: MatrixProps) => {
               {row.map((cell, cellIdx) => (
                 <td key={`${rowIdx}-${cellIdx}`}>
                   <input
+                    style={{
+                      ...inputStyle,
+                      width:
+                        window.innerWidth <= 1024
+                          ? `${computedCellWidth}px`
+                          : 'auto',
+                      maxWidth:
+                        window.innerWidth <= 1024
+                          ? `${computedCellWidth}px`
+                          : 'auto',
+                    }}
                     id={`${rowIdx}-${cellIdx}`}
                     onChange={updateCellValue}
                     value={cell}
@@ -109,28 +170,65 @@ const Matrix = (props: MatrixProps) => {
         </tbody>
       </table>
       {isNumberTable(table) && (
-        <>
+        <footer style={{ display: 'flex', flexDirection: 'column' }}>
           {determinant !== null && table.length === table[0].length && (
-            <footer style={{ display: 'flex', flexDirection: 'column' }}>
-              <div>Determinant: {determinant.result}</div>
+            <>
+              <h3 style={{ margin: '.5rem 0', textAlign: 'center' }}>
+                Determinant: {determinant.result}
+              </h3>
               <Link
+                className="button"
                 to={`/determinant-steps/${id}`}
-                style={{ margin: '1rem 0' }}
+                style={{ marginTop: '1rem' }}
               >
+                <AiOutlineNumber style={{ marginRight: '.5rem' }} />
                 Determinant Steps
               </Link>
               {determinant.result !== 0 && (
-                <Link to={`/inverse-steps/${id}`}>Inverse Matrix Steps</Link>
+                <Link
+                  className="button"
+                  style={{ marginTop: '1rem' }}
+                  to={`/inverse-steps/${id}`}
+                >
+                  <strong style={{ marginRight: '.5rem' }}>(-1)</strong>
+                  Inverse Matrix Steps
+                </Link>
               )}
-            </footer>
+            </>
           )}
-          <Link to={`/rref/${id}`} style={{ marginTop: '1rem' }}>
-            rref matrix
+          <Link
+            className="button"
+            to={`/rref/${id}`}
+            style={{ marginTop: '1rem' }}
+          >
+            <TbAntennaBars5
+              style={{ transform: 'rotate(0.75turn)', marginRight: '.5rem' }}
+            />
+            RREF Steps
           </Link>
-          <Link to={`/transpose/${id}`} style={{ marginTop: '1rem' }}>
-            transpose matrix
+          <Link
+            className="button"
+            to={`/transpose/${id}`}
+            style={{ marginTop: '1rem' }}
+          >
+            <MdOutlineSpaceDashboard style={{ marginRight: '.5rem' }} />
+            Transpose Matrix
           </Link>
-        </>
+          {type === MatrixTypes.PRODUCT && (
+            <Link
+              style={{ marginTop: '1rem', backgroundColor: 'coral' }}
+              to={`/product-steps/${id}`}
+              className="button"
+            >
+              <FaTimes
+                style={{
+                  marginRight: '.5rem',
+                }}
+              />{' '}
+              Product Steps
+            </Link>
+          )}
+        </footer>
       )}
     </article>
   );
