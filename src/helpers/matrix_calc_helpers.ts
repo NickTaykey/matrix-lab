@@ -196,13 +196,13 @@ function fillWithEmptyRows(matrix: NumberTable, nEmptyRows: number) {
 
 function scaleReduction(matrix: NumberTable): {
   matrix: NumberTable;
-  steps: Step[];
+  steps: ReductionStep[];
 } {
   const { newMatrix, nEmptyRows } = isolateEmptyRows(matrix);
 
   let lastMatrix: NumberTable = nEmptyRows > 0 ? newMatrix : copyMatrix(matrix);
   let matrixCopy: NumberTable;
-  let steps: Step[] = [];
+  let steps: ReductionStep[] = [];
 
   steps.push({
     matrix: copyMatrix(matrix),
@@ -256,7 +256,18 @@ function scaleReduction(matrix: NumberTable): {
   };
 }
 
-interface Step {
+function transposeMatrix(mat: NumberTable): NumberTable {
+  let transposed: number[][] = [];
+  for (let i = 0; i < mat[0].length; i++) {
+    transposed[i] = [];
+    for (let j = 0; j < mat.length; j++) {
+      transposed[i][j] = mat[j][i];
+    }
+  }
+  return transposed;
+}
+
+interface ReductionStep {
   matrix: NumberTable;
   message: string;
   rows: number[];
@@ -267,4 +278,5 @@ export {
   getDeterminantAndSteps,
   scaleReduction,
   inverseMatrixWithScaleReduction,
+  transposeMatrix,
 };

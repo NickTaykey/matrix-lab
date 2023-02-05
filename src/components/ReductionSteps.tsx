@@ -27,7 +27,6 @@ const ReductionSteps = () => {
               return s.rows.includes(i) ? genRandomColor() : 'transparent';
             });
           }
-          console.log(s);
           return (
             <article
               key={`${crypto.randomUUID()}-rref-step`}

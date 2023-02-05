@@ -127,6 +127,9 @@ const Matrix = (props: MatrixProps) => {
           <Link to={`/rref/${id}`} style={{ marginTop: '1rem' }}>
             rref matrix
           </Link>
+          <Link to={`/transpose/${id}`} style={{ marginTop: '1rem' }}>
+            transpose matrix
+          </Link>
         </>
       )}
     </article>
