@@ -1,14 +1,14 @@
 import { NumberTable, transposeMatrix } from '../helpers/matrix_calc_helpers';
-import { useParams, useNavigate } from 'react-router-dom';
-import GeneralContext from '../store/GeneralContext';
-import ReadOnlyMatrix from './Matrix/ReadOnlyMatrix';
-import { useContext } from 'react';
 import { genRandomColor } from '../helpers/color_utils';
+import ReadOnlyMatrix from './Matrix/ReadOnlyMatrix';
+import GeneralContext from '../store/GeneralContext';
+import StepPageHeader from './StepPageHeader';
+import { useParams } from 'react-router-dom';
+import { useContext } from 'react';
 
 const TransposedSteps = () => {
   const generalContext = useContext(GeneralContext);
   const { matrixId } = useParams();
-  const navigate = useNavigate();
 
   const matrix = generalContext.matrices.find((m) => m.id === matrixId);
 
@@ -20,26 +20,32 @@ const TransposedSteps = () => {
 
   return (
     <>
-      <button onClick={() => navigate('/')}>Back</button>
-      <h1>Transposed Matrix</h1>
+      <StepPageHeader headerTitle="Trasponse Matrix" />
       {transpose && matrix ? (
         <main
           style={{
+            width: '90%',
+            margin: '0 auto',
             display: 'flex',
-            justifyContent: 'space-evenly',
+            flexDirection: 'column',
+            alignItems: 'center',
             marginTop: '2rem',
           }}
         >
-          <ReadOnlyMatrix
-            matrix={matrix.table}
-            rowColors={randomColors}
-            defaultTextColor="black"
-          />
-          <ReadOnlyMatrix
-            matrix={transpose}
-            colColors={randomColors}
-            defaultTextColor="black"
-          />
+          <article style={{ marginBottom: '2rem' }}>
+            <ReadOnlyMatrix
+              matrix={matrix.table}
+              rowColors={randomColors}
+              defaultTextColor="black"
+            />
+          </article>
+          <article style={{ marginBottom: '2rem' }}>
+            <ReadOnlyMatrix
+              matrix={transpose}
+              colColors={randomColors}
+              defaultTextColor="black"
+            />
+          </article>
         </main>
       ) : (
         <div>Loading</div>

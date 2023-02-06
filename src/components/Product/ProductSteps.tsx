@@ -1,13 +1,13 @@
 import { MatrixProductObject } from '../../store/matrix_reducer_types';
-import { useNavigate, useParams } from 'react-router-dom';
 import GeneralContext from '../../store/GeneralContext';
-import ProductStep from './ProductStepView';
+import ProductStepView from './ProductStepView';
+import StepPageHeader from '../StepPageHeader';
+import { useParams } from 'react-router-dom';
 import { useContext } from 'react';
 
 const ProductSteps = () => {
   const generalContext = useContext(GeneralContext);
   const { matrixId } = useParams();
-  const navigate = useNavigate();
 
   const matrix = generalContext.matrices.find((m) => {
     return m.id === matrixId;
@@ -15,24 +15,19 @@ const ProductSteps = () => {
 
   return (
     <>
-      <button onClick={() => navigate('/')}>Back</button>
+      <StepPageHeader headerTitle="Product steps" />
       {matrix ? (
-        <>
-          <h2 style={{ textAlign: 'center' }}>
-            How to calculate product step by step
-          </h2>
-          <main
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            {matrix.productSteps.map((step, stepIdx) => (
-              <ProductStep key={`product-step-${stepIdx}`} {...step} />
-            ))}
-          </main>
-        </>
+        <main
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          {matrix.productSteps.map((step, stepIdx) => (
+            <ProductStepView key={`product-step-${stepIdx}`} {...step} />
+          ))}
+        </main>
       ) : (
         <h1>404 No matrix with ID {matrixId} was found!</h1>
       )}

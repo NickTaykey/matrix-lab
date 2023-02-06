@@ -1,7 +1,9 @@
 import type { DeterminantStep } from '../../store/matrix_reducer_types';
 import DeterminantStepsView from './DeterminantStepsView';
 import ReadOnlyMatrix from '../Matrix/ReadOnlyMatrix';
+import { BsTriangleFill } from 'react-icons/bs';
 import * as fa from 'react-icons/fa';
+import { useState } from 'react';
 
 interface DeterminantStepViewProps {
   determinantSteps: DeterminantStep;
@@ -18,13 +20,23 @@ const DeterminantStepView = ({
   },
   textColor,
 }: DeterminantStepViewProps) => {
+  const computeTimesIconMargin = () => {
+    return `${window.innerWidth > 1024 ? 2 : 1}rem`;
+  };
+  const [isStepDropDownOpen, setStepDropDownState] = useState(false);
   return (
     <section
       style={{
         margin: '1rem 0',
       }}
     >
-      <section style={{ display: 'flex', alignItems: 'center' }}>
+      <section
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
         <span
           style={{
             ...cellStyle,
@@ -34,8 +46,7 @@ const DeterminantStepView = ({
         >
           {currentCell}
         </span>
-
-        <fa.FaTimes style={{ margin: '0 2rem' }} />
+        <fa.FaTimes style={{ margin: `0 ${computeTimesIconMargin()}` }} />
         <span>
           (-1)
           <sup
@@ -48,14 +59,13 @@ const DeterminantStepView = ({
             {coords[0]} + {coords[1]}
           </sup>
         </span>
-        <fa.FaTimes style={{ margin: '0 2rem' }} />
+        <fa.FaTimes style={{ margin: `0 ${computeTimesIconMargin()}` }} />
         {submatrix && (
           <section style={{ display: 'flex', alignItems: 'center' }}>
             <section
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                marginRight: '2rem',
               }}
             >
               <div style={{ marginRight: '1rem' }}>det(</div>
@@ -69,8 +79,21 @@ const DeterminantStepView = ({
         submatrixDeterminant.steps &&
         submatrixDeterminant.steps.length > 1 && (
           <details style={{ marginTop: '1rem' }}>
-            <hr />
-            <summary>Show determinant steps</summary>
+            <hr style={{ margin: '1rem 0' }} />
+            <summary
+              onClick={() => setStepDropDownState((v) => !v)}
+              style={{ backgroundColor: 'blueviolet', color: 'white' }}
+              className="button"
+            >
+              <BsTriangleFill
+                style={{
+                  transition: 'transform .25s ease-in-out',
+                  transform: `rotate(${isStepDropDownOpen ? 0.5 : 0.25}turn)`,
+                  marginRight: '1rem',
+                }}
+              />
+              Show determinant steps
+            </summary>
             {submatrixDeterminant.steps.map((step, stepIdx) => (
               <article key={`determinant-${crypto.randomUUID()}`}>
                 <DeterminantStepsView matrix={step.submatrix!} />
@@ -94,7 +117,7 @@ const DeterminantStepView = ({
                 )}
               </article>
             ))}
-            <hr />
+            <hr style={{ margin: '1rem 0' }} />
           </details>
         )}
     </section>

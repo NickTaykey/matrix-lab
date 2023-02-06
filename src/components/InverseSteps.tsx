@@ -3,16 +3,16 @@ import {
   NumberTable,
 } from '../helpers/matrix_calc_helpers';
 import { genRandomColor } from '../helpers/color_utils';
-import { useNavigate, useParams } from 'react-router-dom';
 import GeneralContext from '../store/GeneralContext';
 import ReadOnlyMatrix from './Matrix/ReadOnlyMatrix';
+import StepPageHeader from './StepPageHeader';
+import { useParams } from 'react-router-dom';
 import { useContext } from 'react';
 import Fraction from 'fraction.js';
 
 const InverseSteps = () => {
   const generalContext = useContext(GeneralContext);
   const { matrixId } = useParams();
-  const navigate = useNavigate();
 
   const matrix = generalContext.matrices.find((m) => m.id === matrixId);
 
@@ -24,19 +24,22 @@ const InverseSteps = () => {
 
   return (
     <main
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+      }}
     >
-      <button onClick={() => navigate('/')}>Back</button>
       {inverse ? (
         <>
-          <h2>Inverse matrix:</h2>
+          <StepPageHeader headerTitle="Inverse Matrix" />
           <ReadOnlyMatrix
             matrix={inverse.table.map((r) => {
               return r.map((v) => new Fraction(v).toFraction());
             })}
             defaultTextColor="black"
           />
-          <h2>Follow these steps</h2>
           {inverse.steps.map((s, i) => {
             const rowColors = new Array(s.leftMatrix.length).fill(
               'transparent'
@@ -47,8 +50,20 @@ const InverseSteps = () => {
                 key={`${matrixId}-step-${i}`}
                 style={{ marginBottom: '3rem' }}
               >
-                <h3 style={{ marginBottom: '1rem' }}>{s.message}</h3>
-                <section style={{ display: 'flex' }}>
+                <h3
+                  style={{
+                    marginTop: i === 0 ? '2rem' : 0,
+                    marginBottom: '2rem',
+                  }}
+                >
+                  {s.message}
+                </h3>
+                <section
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                >
                   <ReadOnlyMatrix
                     matrix={s.leftMatrix.map((r) => {
                       return r.map((v) =>

@@ -34,6 +34,7 @@ const ReadOnlyMatrix = ({
   onCellClick,
 }: ReadOnlyMatrixProps) => {
   let determinantStepIdx = 0;
+
   return (
     <table
       className="matrix"
@@ -70,11 +71,10 @@ const ReadOnlyMatrix = ({
 
               const tabCell = (
                 <td
+                  className="readonly-matrix-cell"
                   key={`${rowIdx}-${colIdx}`}
                   id={`${rowIdx}-${colIdx}`}
                   style={{
-                    width: '80px',
-                    padding: '1rem',
                     backgroundColor:
                       highlightedCells &&
                       !rowIdx &&

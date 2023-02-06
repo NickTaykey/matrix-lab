@@ -29,8 +29,6 @@ const Matrix = (props: MatrixProps) => {
     computeCellWidth(table[0].length)
   );
 
-  console.log(computedCellWidth);
-
   const updateMatrixSize = (e: React.FormEvent<HTMLInputElement>) => {
     generalContext.updateMatrixSize(id, {
       newNRows:

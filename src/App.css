@@ -54,6 +54,40 @@ input[type='checkbox'] {
   box-shadow: 2px 2px 6px 3px rgba(0, 0, 0, 0.2);
 }
 
+.matrix:hover,
+button:hover {
+  cursor: pointer;
+}
+
+.readonly-matrix-cell {
+  padding: 0.9rem;
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.product-steps-container {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.product-step-container {
+  display: flex;
+}
+
+.product-step-item {
+  display: flex;
+  align-items: center;
+}
+
+.equals {
+  font-size: 1rem;
+  margin: 0 2rem;
+}
+
+.times-icon {
+  margin: 0 2rem;
+}
+
 @media screen and (max-width: 1024px) {
   html,
   body {
@@ -83,9 +117,23 @@ input[type='checkbox'] {
     padding: 1rem;
     margin-right: 0;
   }
-}
 
-.matrix:hover,
-button:hover {
-  cursor: pointer;
+  .readonly-matrix-cell {
+    padding: 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .product-steps-container,
+  .product-step-container,
+  .product-step-item {
+    flex-direction: column;
+  }
+
+  .equals {
+    margin: 1rem 0.5rem;
+  }
+
+  .times-icon {
+    margin: 1rem 0.5rem;
+  }
 }

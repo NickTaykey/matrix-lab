@@ -82,53 +82,48 @@ const ProductStepView = (props: ProductStep) => {
   };
 
   return (
-    <article
-      style={{
-        display: 'flex',
-        marginBottom: '2rem',
-        alignItems: 'center',
-      }}
-    >
-      {props.steps.map((mat, idx, arr) => (
-        <section
-          style={{ display: 'flex', alignItems: 'center' }}
-          key={`mat-${idx}`}
-        >
-          {idx === arr.length - 1 ? (
-            <>
-              <fa.FaEquals style={{ margin: '0 2rem' }} />
+    <article className="product-steps-container">
+      <section className="product-step-container">
+        {props.steps.map((mat, idx, arr) => (
+          <section className="product-step-item" key={`mat-${idx}`}>
+            {idx === arr.length - 1 ? (
+              <>
+                <fa.FaEquals className="equals" />
+                <ReadOnlyMatrix
+                  matrix={mat}
+                  cellsColorState={cellColors}
+                  defaultTextColor="black"
+                  onCellClick={cellClickHandler}
+                />
+              </>
+            ) : idx % 2 === 0 ? (
+              <>
+                <ReadOnlyMatrix
+                  matrix={mat}
+                  rowColors={computeRowColors()}
+                  defaultTextColor="black"
+                />
+                <fa.FaTimes className="times-icon" />
+              </>
+            ) : (
               <ReadOnlyMatrix
                 matrix={mat}
-                cellsColorState={cellColors}
-                defaultTextColor="black"
-                onCellClick={cellClickHandler}
-              />
-            </>
-          ) : idx % 2 === 0 ? (
-            <>
-              <ReadOnlyMatrix
-                matrix={mat}
-                rowColors={computeRowColors()}
+                colColors={computeColColors()}
                 defaultTextColor="black"
               />
-              <fa.FaTimes style={{ margin: '0 2rem' }} />
-            </>
-          ) : (
-            <ReadOnlyMatrix
-              matrix={mat}
-              colColors={computeColColors()}
-              defaultTextColor="black"
-            />
-          )}
-        </section>
-      ))}
-      <fa.FaEquals style={{ margin: '0 2rem' }} />
-      <ReadOnlyMatrix
-        matrix={props.decomposedResult}
-        cellsColorState={cellColors}
-        onCellClick={cellClickHandler}
-        defaultTextColor={'black'}
-      />
+            )}
+          </section>
+        ))}
+      </section>
+      <fa.FaEquals style={{ margin: '2rem', alignSelf: 'center' }} />
+      <section style={{ width: '90%', margin: '0 auto' }}>
+        <ReadOnlyMatrix
+          matrix={props.decomposedResult}
+          cellsColorState={cellColors}
+          onCellClick={cellClickHandler}
+          defaultTextColor={'black'}
+        />
+      </section>
     </article>
   );
 };

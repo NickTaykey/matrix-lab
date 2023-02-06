@@ -18,7 +18,7 @@ const Menu = () => {
           alignItems: 'center',
         }}
       >
-        <SiMatrix style={{ marginRight: '.5rem' }} /> Matrix lab
+        <SiMatrix style={{ marginRight: '.5rem' }} /> Matrix Lab
       </h1>
       <MenuHeader />
       <main className="menu-grid" style={{ marginTop: '2rem' }}>
